@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Directory</title>
+<meta name="description" content="A searchable directory of useful websites.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a0c; --surface:rgba(18,26,29,.72); --ink:#f1eee6; --muted:#a3a79f; --line:rgba(255,255,255,.12);
+  --accent:#ffc83d; --accent-ink:#1a1204; --mark:#f2b705;
+  color-scheme:dark;
+}
+*{-webkit-tap-highlight-color:transparent}
+a,button,input,.status{outline:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{transition:background-color .4s ease,color .4s ease;margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{position:relative;z-index:2;max-width:820px;margin:0 auto;padding:clamp(20px,5vw,56px) 20px 80px}
+h1{font-size:clamp(2.6rem,9vw,5rem);font-weight:800;line-height:.95;letter-spacing:-.04em;margin:0 0 14px;background:linear-gradient(180deg,#fff 10%,#ffd77a 85%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 18px rgba(255,160,40,.25))}
+.lede{color:var(--muted);font-size:1.1rem;max-width:46ch;margin:0 0 32px}
+.search{transition:border-color .25s ease,box-shadow .25s ease;width:100%;font:inherit;font-size:1.05rem;padding:14px 16px;border:2px solid rgba(255,255,255,.28);border-radius:10px;background:rgba(8,12,14,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.chip:focus-visible,.row:focus-visible,.hint button:focus-visible{outline:2px solid color-mix(in srgb,var(--mark) 70%,transparent);outline-offset:2px}}
+.search:focus{border-color:var(--mark);box-shadow:0 0 0 5px color-mix(in srgb,var(--mark) 16%,transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
+.chip{transition:background-color .25s ease,color .25s ease,border-color .25s ease,transform .2s ease;font:inherit;font-size:.92rem;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chip:active{transform:scale(.95)}
+.chip[aria-pressed="true"]{background:var(--mark);color:var(--accent-ink);border-color:var(--mark);font-weight:600}
+.count{color:var(--muted);font-size:.9rem;margin:20px 0 4px}
+ul{list-style:none;margin:0;padding:0;position:relative}
+li{border-top:1.5px solid var(--line);position:relative}
+li:last-child{border-bottom:1.5px solid var(--line)}
+.row{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 6px;color:inherit;text-decoration:none;border-radius:8px;transition:background-color .25s ease,transform .25s ease}
+.row:active{transform:scale(.992)}
+@media (hover:hover){
+  .row:hover{background:color-mix(in srgb,var(--surface) 65%,transparent)}
+  .row:hover .name{background-size:100% 4px}
+  .row:hover .ico{transform:scale(1.07) rotate(-2deg)}
+  .chip:hover{border-color:var(--mark)}
+  .status:hover{transform:translateY(-1px);border-color:var(--c)}
+}
+.ico{transition:transform .35s cubic-bezier(.34,1.56,.64,1);width:44px;height:44px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;font-weight:800}
+.ico img{width:26px;height:26px}
+.ico.brand{position:relative;overflow:visible;background:#111;border-color:#111;color:#fff}
+.ico.brand>svg{width:24px;height:24px}
+.ico.brand>img{width:100%;height:100%;border-radius:9px;object-fit:cover}
+.flag{position:absolute;right:-8px;bottom:-8px;width:26px;height:17px;border-radius:3px;border:2px solid var(--bg);overflow:hidden;line-height:0;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.flag svg,.flag img{width:100%;height:100%}
+.flag img{object-fit:contain}
+.flag:has(img){width:34px;height:24px;border:0;box-shadow:none;background:none;overflow:visible;right:-12px;bottom:-10px;filter:drop-shadow(0 0 2px rgba(255,255,255,.9))}
+.flags{position:absolute;right:-8px;bottom:-8px;display:flex}
+.flags .flag{position:static;width:22px;height:15px}
+.flags .flag+.flag{margin-left:-8px}
+.verified{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:.75rem;font-weight:600;color:#1d9bf0;vertical-align:middle}
+.verified svg{width:16px;height:16px}
+.name{font-size:1.25rem;font-weight:600;letter-spacing:-.01em;background:linear-gradient(var(--mark),var(--mark)) 0 100%/0 4px no-repeat;transition:background-size .35s cubic-bezier(.2,.8,.2,1);padding-bottom:1px}
+.host{color:var(--muted);font-size:.85rem;margin-left:8px;font-weight:400}
+.desc{margin:2px 0 8px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.78rem;padding:1px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.empty{padding:40px 0;color:var(--muted)}
+.statusline{margin:0 0 4px}
+.status{--c:#8b8fa3;display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;padding:2px 11px 2px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;user-select:none;transition:transform .2s ease,border-color .25s ease}
+.status small{font-size:.75rem;font-weight:400;color:var(--muted)}
+.cnt .num{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;transition:color .9s ease}
+.cnt.up .num{color:#22c55e;transition:none}.cnt.down .num{color:#f59e0b;transition:none}
+.status .lamp.blip{animation:blip .8s ease-out}
+@keyframes blip{0%{transform:scale(1)}35%{transform:scale(1.7);box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 30%,transparent),0 0 16px var(--c)}100%{transform:scale(1)}}
+.lamp{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent),0 0 8px var(--c)}
+.s-unverified{--c:#8b8fa3}.s-login{--c:#8b8fa3}.s-online{--c:#22c55e}.s-closed{--c:#ef4444}.s-broken{--c:#8b8fa3}.s-unavailable{--c:#a78bfa}.s-online .lamp{animation:beat 2.6s ease-in-out infinite}
+.s-active{--c:#22c55e}.s-down{--c:#f59e0b}.s-deleted{--c:#ef4444}.s-invalid{--c:#8b8fa3}.s-checking{--c:#5b8def}.s-blocked{--c:#8b8fa3}
+.s-checking .lamp{animation:pulse 1s ease-in-out infinite}
+.s-active .lamp{animation:beat 2.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.3}}
+@keyframes beat{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 12%,transparent),0 0 12px var(--c)}}
+@media (prefers-reduced-motion:reduce){.s-checking .lamp,.s-active .lamp,.s-online .lamp,.status .lamp.blip{animation:none}}
+.hint{margin:10px 0 4px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:8px}
+.hint button{font:inherit;font-weight:700;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.where{margin-left:8px;font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px;white-space:nowrap}
+/* ---- backdrop: dusk haze, tactical grid, vignette ---- */
+.scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(#0b1316,#06090b)}
+.glow{position:absolute;inset:0;background:radial-gradient(120% 58% at 50% 104%,rgba(255,150,40,.42),rgba(190,85,20,.14) 46%,transparent 72%),radial-gradient(70% 50% at 88% -6%,rgba(24,92,104,.38),transparent 70%),radial-gradient(60% 40% at 8% 30%,rgba(255,190,80,.07),transparent 70%);animation:breathe 8s ease-in-out infinite alternate}
+@keyframes breathe{from{opacity:.82}to{opacity:1}}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,200,90,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,200,90,.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(90% 70% at 50% 40%,#000 20%,transparent 80%);mask-image:radial-gradient(90% 70% at 50% 40%,#000 20%,transparent 80%)}
+.vignette{position:absolute;inset:0;background:radial-gradient(130% 100% at 50% 40%,transparent 55%,rgba(0,0,0,.6))}
+.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#embers-back{z-index:1}
+#embers-front{z-index:3}
+
+.foot{margin:48px 0 0;text-align:center;color:var(--muted);font-size:.8rem;letter-spacing:.02em;opacity:.8}
+.chips[hidden]{display:none}
+.subchips{margin:20px 0 14px;padding-top:20px;gap:10px;border-top:1.5px solid rgba(255,255,255,.22)}
+.subchips .chip{font-size:.85rem;padding:4px 13px}
+.pin{position:absolute;top:12px;right:0;width:38px;height:38px;display:grid;place-items:center;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:10px;transition:color .2s ease,background-color .2s ease,transform .2s ease}
+.pin svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.pin:hover{color:var(--accent);background:var(--surface)}
+.pin:active{transform:scale(.88)}
+.pin[aria-pressed="true"]{color:var(--accent)}
+.pin[aria-pressed="true"] svg{fill:currentColor;transform:rotate(-12deg)}
+.pinned{margin:4px 0 26px}
+.pinned[hidden]{display:none}
+.pinhead{display:flex;align-items:center;gap:9px;margin:0 0 6px 6px;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.pinhead svg{width:16px;height:16px;fill:currentColor;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pinhead small{font-size:.78rem;font-weight:400;letter-spacing:.04em;color:var(--muted)}
+.creator .row{padding-right:46px}
+.cbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;padding:8px 12px;border:1.5px dashed var(--line);border-radius:12px;font-size:.82rem;color:var(--muted)}
+.cbar[hidden]{display:none}
+.cbar b{color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-size:.74rem}
+.cbar button{font:inherit;font-size:.8rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer}
+.cbar button:hover{border-color:var(--accent);color:var(--accent)}
+/* ---- motion ---- */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.hint:not([hidden]){animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.slot .where{display:inline-block;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@media (prefers-reduced-motion:no-preference){
+  .wrap>h1,.wrap>.lede,.wrap>.search,.wrap>.chips,.wrap>.count{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+  .wrap>.lede{animation-delay:.06s}.wrap>.search{animation-delay:.12s}.wrap>.chips{animation-delay:.18s}.wrap>.count{animation-delay:.24s}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-delay:0s!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="scene" id="scene" aria-hidden="true">
+  <div class="glow"></div>
+  <div class="grid"></div>
+  <div class="vignette"></div>
+</div>
+<canvas id="embers-back" class="fx" aria-hidden="true"></canvas>
+<main class="wrap">
+  <h1>Site Directory</h1>
+  <p class="lede">A hand-picked list of useful websites. Search, or filter by category.</p>
+  <div id="cbar" class="cbar" hidden><b>Creator mode</b><span>Only you see the pin buttons.</span><button type="button" id="cpcopy">Copy pin list</button><button type="button" id="cexit">Exit</button></div>
+  <input id="q" class="search" type="search" placeholder="Search sites" aria-label="Search sites" autocomplete="off">
+  <section id="pinned" class="pinned" aria-label="Pinned sites" hidden>
+    <h2 class="pinhead"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>Pinned <small id="pincount"></small></h2>
+    <ul id="pinlist"></ul>
+  </section>
+  <div id="chips" class="chips" role="group" aria-label="Categories"></div>
+  <div id="subchips" class="chips subchips" role="group" aria-label="Filter by app" hidden></div>
+  <p id="count" class="count" aria-live="polite"></p>
+  <p id="hint" class="hint" aria-live="polite" hidden></p>
+  <ul id="list"></ul>
+  <footer class="foot">This page is community-driven.</footer>
+</main>
+<canvas id="embers-front" class="fx" aria-hidden="true"></canvas>
+
+<script>
+/* ================= EDIT YOUR SITES HERE =================
+   Each entry: name, url, description, category, tags (optional) */
+const INSTAGRAM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>`;
+const YOUTUBE = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="4.5" width="22" height="15" rx="4.5" fill="#f00"/><path d="M9.75 8.9v6.2l5.3-3.1z" fill="#fff"/></svg>`;
+const FACEBOOK = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.6V21h3z"/></svg>`;
+const TIKTOK = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`;
+const PH_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Philippines flag"><rect width="60" height="15" fill="#0038a8"/><rect y="15" width="60" height="15" fill="#ce1126"/><path d="M0 0L26 15L0 30Z" fill="#fff"/><g fill="#fcd116"><circle cx="8.5" cy="15" r="3"/><g stroke="#fcd116" stroke-width=".9"><path d="M8.5 9.5v-2M8.5 20.5v2M3 15H1M14 15h2M4.6 11.1L3.2 9.7M12.4 18.9l1.4 1.4M4.6 18.9L3.2 20.3M12.4 11.1l1.4-1.4"/></g><g id="st"><polygon points="0,-2 .47,-.65 1.9,-.62 .76,.25 1.18,1.62 0,.8 -1.18,1.62 -.76,.25 -1.9,-.62 -.47,-.65" transform="translate(3 4.5)"/></g><polygon points="0,-2 .47,-.65 1.9,-.62 .76,.25 1.18,1.62 0,.8 -1.18,1.62 -.76,.25 -1.9,-.62 -.47,-.65" transform="translate(3 25.5)"/><polygon points="0,-2 .47,-.65 1.9,-.62 .76,.25 1.18,1.62 0,.8 -1.18,1.62 -.76,.25 -1.9,-.62 -.47,-.65" transform="translate(22.5 15)"/></g></svg>`;
+const MY_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Malaysia flag"><rect width="60" height="30" fill="#fff"/><rect y="0" width="60" height="2.14" fill="#cc0001"/><rect y="4.29" width="60" height="2.14" fill="#cc0001"/><rect y="8.57" width="60" height="2.14" fill="#cc0001"/><rect y="12.86" width="60" height="2.14" fill="#cc0001"/><rect y="17.14" width="60" height="2.14" fill="#cc0001"/><rect y="21.43" width="60" height="2.14" fill="#cc0001"/><rect y="25.71" width="60" height="2.14" fill="#cc0001"/><rect width="30" height="17.14" fill="#010066"/><circle cx="11" cy="8.6" r="5.4" fill="#fc0"/><circle cx="12.8" cy="8.6" r="4.4" fill="#010066"/><polygon fill="#fc0" points="19.5,3.6 20.0,6.5 21.7,4.1 20.9,6.9 23.4,5.5 21.5,7.6 24.4,7.5 21.7,8.6 24.4,9.7 21.5,9.6 23.4,11.7 20.9,10.3 21.7,13.1 20.0,10.7 19.5,13.6 19.0,10.7 17.3,13.1 18.1,10.3 15.6,11.7 17.5,9.6 14.6,9.7 17.3,8.6 14.6,7.5 17.5,7.6 15.6,5.5 18.1,6.9 17.3,4.1 19.0,6.5"/></svg>`;
+const ID_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Indonesia flag"><rect width="60" height="15" fill="#e70011"/><rect y="15" width="60" height="15" fill="#fff"/></svg>`;
+const GFORM = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 2h9l5 5v15H5z" fill="#fff"/><path d="M14 2l5 5h-5z" fill="#d9c9f0"/><g fill="#7248b9"><rect x="8" y="11" width="2" height="2"/><rect x="11.5" y="11" width="5" height="2"/><rect x="8" y="15" width="2" height="2"/><rect x="11.5" y="15" width="5" height="2"/></g></svg>`;
+const SG_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Singapore flag"><rect width="60" height="15" fill="#ef3340"/><rect y="15" width="60" height="15" fill="#fff"/><circle cx="12" cy="8" r="5.5" fill="#fff"/><circle cx="14.5" cy="8" r="5" fill="#ef3340"/><g fill="#fff"><circle cx="22" cy="4.7" r="1.1"/><circle cx="25.6" cy="7.3" r="1.1"/><circle cx="24.2" cy="11.7" r="1.1"/><circle cx="19.8" cy="11.7" r="1.1"/><circle cx="18.4" cy="7.3" r="1.1"/></g></svg>`;
+const VN_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Vietnam flag"><rect width="60" height="30" fill="#da251d"/><polygon fill="#ff0" points="30,7 31.8,12.5 37.6,12.5 32.9,15.95 34.7,21.5 30,18.06 25.3,21.5 27.1,15.95 22.4,12.5 28.2,12.5"/></svg>`;
+const TH_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Thailand flag"><rect width="60" height="30" fill="#a51931"/><rect y="5" width="60" height="20" fill="#f4f5f8"/><rect y="10" width="60" height="10" fill="#2d2a4a"/></svg>`;
+const TW_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Taiwan flag"><rect width="60" height="30" fill="#fe0000"/><rect width="30" height="15" fill="#000095"/><g fill="#fff" transform="translate(15 7.5)"><rect x="-3.8" y="-3.8" width="7.6" height="7.6"/><rect x="-3.8" y="-3.8" width="7.6" height="7.6" transform="rotate(30)"/><rect x="-3.8" y="-3.8" width="7.6" height="7.6" transform="rotate(60)"/></g><circle cx="15" cy="7.5" r="2.7" fill="#000095"/><circle cx="15" cy="7.5" r="2.1" fill="#fff"/></svg>`;
+const CN_FLAG = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="China flag"><rect width="60" height="30" fill="#de2910"/><g fill="#ffde00"><polygon points="10,3 11.8,8.5 17.6,8.5 12.9,11.9 14.7,17.4 10,14 5.3,17.4 7.1,11.9 2.4,8.5 8.2,8.5"/><polygon points="20,2 20.6,3.9 22.6,3.9 21,5.1 21.6,7 20,5.8 18.4,7 19,5.1 17.4,3.9 19.4,3.9"/><polygon points="24,6 24.6,7.9 26.6,7.9 25,9.1 25.6,11 24,9.8 22.4,11 23,9.1 21.4,7.9 23.4,7.9"/><polygon points="24,12 24.6,13.9 26.6,13.9 25,15.1 25.6,17 24,15.8 22.4,17 23,15.1 21.4,13.9 23.4,13.9"/><polygon points="20,16 20.6,17.9 22.6,17.9 21,19.1 21.6,21 20,19.8 18.4,21 19,19.1 17.4,17.9 19.4,17.9"/></g></svg>`;
+const STEAM_BADGE = `<svg viewBox="0 0 60 30" preserveAspectRatio="none" role="img" aria-label="Steam"><rect width="60" height="30" fill="#1b2838"/><circle cx="36" cy="12" r="8" fill="none" stroke="#fff" stroke-width="3"/><circle cx="36" cy="12" r="3" fill="#fff"/><circle cx="20" cy="21" r="5" fill="none" stroke="#fff" stroke-width="3"/><path d="M24 19L33 14" stroke="#fff" stroke-width="3"/></svg>`;
+const GARENA_LOGO = `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAACzCAYAAAC3mZFQAAA+EElEQVR42u2deZwsZXX3v9XLzF0BleWisqmgIAooKm6IIO7L6x7RuGCS10QTo1ncotFX44oaNcRI3OK+xQ1F4wIqbhiVTQFRMIAiXLj3AnfhznR31fvHOU/q9Omnuntmunq6Z6o+n/7M1tNdXfX8nvM7v7Ml1xx4GNWxao+afk31a6KPTH9u6N865u+Yv1fHMh+N6hKs6iN1P2fu+3afv1dHBeDqWOYjiYDTg7ihljpY4grEFYCrY0KOTMGZOHocfu5ErHBSgXjyfKDqWN00umPodFgTLf1dA3gQ8F7ghdWaqSxwdUwOfW4aWpwaEN9FH4cDzwM2Ab8DztTnV1a4AnB1LDPzSoB587vbAQ8BngicBOyvv98BPB04y/xvWl3CCsDVsXCLGSxfFvkbBVYxMcCzYhTALHAc8AjgkcAx+rffAD8Dfgv8l4LXh5yqowLwVIOJPqAp4/DAtcJTEYAt6Dv6uC1wJHAC8CTgKAfMq4B3A18A/mBeJwPqBRtIdVQAnirQWnCky7Sgiyxx3fmzABsUqA8FHgbcD1ijf5vT/wlr4fdqeXephU4RJToWF66OCsBTdfgY6XKIOYneN299Q8gngGwv4F7AyQraeyggA2h36XP3AG4AvgxcCHxI/d6EeIipOioAT93R1EXcdpYtGzNwm3QnXNjwTwIcCNxXfdoHI0py3QA8KMiz5nXfA/w7cHEfX7k6KgBPLW1OkJhoOOp05wZnYzqHmqGz4VgLHIbEaR8C3Ac42Py9ZcCbOtp8OrAFeLP+bSNwax+XIAC7ysaqALzsoBxmAdbNYj0e+CPgY8CPDKiSAivlFeN+NDQmTIXnpuY1UrWcBwNHK2iPB+4KrDOv0QF26/k3zWsF8P4a+CfgI+SZWA2lzZnbLOy5pVQCVgXgCQFwDDw1B6CW+pEvBl6lP3/KAc1X8dCHYicFvnPdASZ153QgEt65j9LjuwF3dMBq0R0uWu8s8Iz6uf8GnIEkZdTMZ/Dn3BlCA6iOCsDLcqQROpiY37X0dw8F3q7g+TaSRvgrBUPwJ2t0l95h/j/8rqa0t2NAUzPA6ThKfogKTvcCjtXv72B8WQ+4lDy80zIbQvDd54APA28CLtf3mKFSlSsAT+lRc3TQWs6gyr4C+DsFwxuB1yFZS2sVJJ0ILW6b1++Y3yXAvvr9Fmel91Sh6SgF6xFKiTe5cw7qcoPuhAq7+YTnZYZKfxV4J/AdY+2hOwOrOioATyWFDou/qQs6Q0Iub1Grey3wJ8DXFCDBmqXGknbMNawZYNSBg4D7A49Gkideo1/viWQ/3Q24s9LhjRFKbC1pg1wBt36oz44K6vIPlT2caV4rc5a+RqUyVwCewsNS2WCNDgD+BniRLvZvAX8FXKo/141/WnOACfHXulrQk5G0xOPUhwa4RmnsnXUjqEUA2zGg9FY2xhhq5m9N/d0vgXcBH0fivA0jxtWN720TPiq/tgLw1FFoqx4/EfhH8pTCNwOvVWvbNMDpGAp6JLAdSTucVSv7xwrePd37zQG3N/8bftfR16+7TcKr1XXn/9ac71sHrkbK/T6gYlVQoIO/bBXx8D4Vja4APHbKu1TAhpTBORWGXgU8G1FtbwL+EgkVBeC09Pkt95qPQyp23gK8HDjR/K3l/ONZY/lDh4vZIc675UCPEcSCL3wTkoRxum4m4Z5mRiDzBRCV1a0APNYjGwHwmwqaXbqonwq8AUmCALgAeAFwnl6TphGFOmphDwEuQxTpS1XcOsFQ1GAdPeh8qCkdYsNJ6S2cb+l5NYCdwCcVuBc4Sj2oj1UF3grAE3/UHXg6anUPUKv7LPJY6SeBlwDXm+fWjXB0GwX7MWrxzkEU4wDwlvFrkxHS/PD6bSO2pUhp3zv0PDC/rwSpCsArhk4HoSrQ3zbwZOA0JJMpCEdv1EfwB/cEblawz6nVPc34x3upz+w3i1GmVKbO557R358D/DPwFfKsrDqS/lhZ1QrAU3O+Qfxp96GjAVQtJAZ7mopMgepuV3/3o/r8GSTRYZNS6Qw4RcWt20dEqaDuzjqKPCrrO2+A+yvgbXqu84amz5vNrGpxUwF4Ks61DeyjC/i6PgCwCvNbgEMNKH6tID1bn3OwWrYn6HOOVjDcPWLVM+Oj2uytUXSpsGGqGUSUehdS3neTfv4Z45dXfm11TA2Ag/q6L5K5dL4Bqo1tBpFobyQU9GfkCRizwI+RJm2X6c9PAl6PxGc7CpC70d2ZMYRe6g7MMaGpCJjQnTEFvfnH4T1uQGLG70ZyloOf26G7EijEcouqg0ZtlRf7ekm12aweAMcWyYwCaRPwWOAz6vfVDZVtm4X8aKXD91SLugup1vkmUlG0FUm4eJX+XDNCVEqvomzDLzVD0TsLsLxJxM/tGF8WPc9PKnAvMu9jleUswgow/n5GvFiiE7nGbeduxPo/+4oq+3sMEwkbZ6zlTo3e6ir7uhWgVwCAvTjVdAttBqkK+oT6rzNGwEkVoImC8mX6Grv1eTPqP56q378IybI6lO60Res/F4Ev7QPKIuZgj5YB76zx5T+rdPk8cw4xZblR8L5tihMz2gXXu+aAWfT3zIG1oe+VmPMP7GW+QJQb5tpUxxQDuChWGZIW/hVRXy/WhR8W7AFIIftaBehxZsGE+tfXqoj1FCRcdF+3iMqyAL7AoG6osM1ZfgOSb43ZmGwySKxgwh9NREHfC8mrvh0S/lqr77VG3/f2auk/AGyOADwxa6Jj1khqrOc8kom2DviJvtdapfub9G/z+rhVN9x5c/4dJI69u7K+K88CB7pnK3veqz7sF4w/W0NiuSfrQno4UkU073zN/0CKEr6qQGcBvutSj+Cz1p2wVkdylt+qjKJtmEJGnmbpN7ZQ1bSf6gCHqQB3gAJnbwVxeK3Yvb1MWcoOA3xbnpiZzcNa3o36Ge6M5Hm/WGn+p4DnIzH1LyDZbfdR0W2Xfv0DUoV1s35/HXCFgrs6lgqcCRkvWqc7k+ggFZserovsoXrDO0id7GuQ2OzNKjo1DRAwPuUOXfQYIQu6c4QtZRx1z+PM0fIrkOypD+q5152Fs5R5T2Qywt0RZfyuSHH/vvq32oCNw1L1IHi9Asn1DvS35TaJ2ylT+TqSZbYR+CLwXNUWfmCu6xb9/mZ9dFSA207eFWTOiW6Zu+6VBV4hAG4YirZOd/bH6t8ergLUOiRv+fVqbbboggvx4JkCC9t2ILH1wLZkbxjwLgTkIV6NLuwPIN0wfqu/X6ObUttcg7sgbXLur6A9hN7iCLsBpRHRKdatMpzHWcCr9b1PQfK+r1ereaK+3tFKh+eQksTf6PMT/RxL0TdinUwqIE8RgP0Nsz8HcPyVCjqp0rKnKE18O5LD7IdwBVC2zeKwBQx2RGbHiTa1IcQW6G51Y/Od08jr2Fre3boZvVMpZ8isutV8/nvqJnWiAul2fUQozxqSiOiGo8Rz+p72uVvM+/xA3ZT1Sm/PU5oe3JW99frt1ufPA7coPd6mz/GbnL0+Hri+oQLElerqmEAA151AYtu1ogLIN5DC9wQJ81yC1LceY/7XN4or+7BArRUA11p7VHR7uwpV886vPBDp1fwEpP3rbcz7dCLWdJQ0Prz+tUqPz1EQBrp+pF7/jaorzLrNqaU0+RYF/FXAlUi7nl/q97c4duXj1VkEwLa+ucoum1ARq+P8zXCT1qoy+RTd/VHavFMV2oOMuJLSPXR6Oa5T5j5TsLpNJNPrDbrpdJzFfDDwNKQc8cAI+EOHj6TEjSjR6/pjdUtOU6ruj1aBJW2qVd4PCcU92PzPdgXw+WrZz0NSQeciltb3BvPuQNUxZEJ9YA/gAMpN6qMdDdyotO45bqG3jU83TgDXDH0MgLZhnVCq+CGkUuhK87/7ICmdz1D/NrxWaP2auU1h1AD2FjjVz9EwG5NtutfswzAs+0npjhUnkY1uGzLt4WwVxn5Ob/JJYkS3qvRxCgBcczcn00X+KfUDdyPtTx+lyuuco3FpxIcu+whq7Yz5uWbEobNVXPuO822frqzi0AKf1iauMKQ/vhgA2zY8HQPAxN0HT9tjPaLrfax7eH0bMgvP36kW+T+VVf3WPCecT9NsjNUUxAm2wHYx7Y1kSj1Sfx8ajj9Hb3pirEXNWYJxZfNkRgyzx8UqUH2UvC/WQ/TcH48kVrRVtGqaz1Ar8K/LAPCgjRQHuNhGE7OKtkXuoM0vdZvwFgXyp4Dv0p3llUUodXVMmAUOyQHzwJ8rCIKl/QOiiO5BnghhxZ3GmBd6DMCXk/eg2q7n+ngF7sPMuXlLHdt8Mveoj4FZ1AaIdbFRphAvyIjRbF+tBd1dNa2w9U2kLdCXHL2uALwMAA6hCpsob8vkZskL7N+DjL18u97ETXSHhBoRkQd6uzYuFZR2odadlU8ddb5c6X1IxDhYfdun0z1nNyugmp0x0v6F+sgxltQP/EVg77chBIreJg83hXDVt3VTPMvd10ZlkYuPRgmLwYZB/I0LzdPfiBQV7HbUODNiStrHaqQjWrSJe2+7UBoGhD9XK/EfSodPIM9O2sdsML70MO3jX07MJr7A56eR/0+GsO72mDGsKsTvH43Ew7+GFHd8HUkc8e/nQ5GVBS7hsGJEYnbRDvD3SJF9J7LQx2lxBvlvW5CY9GeB7yOx2qcjNcRH0j1KpcgnXE1Wo+ZYxrVIY/mb1c34PXkE4Vl0d/K0rkW4rq8F/h95F5aq9HAMFjjcyJb7OVjWlyO1upZKtiICyrhENE9355Auj2craFOkgd3fKkVeHwFn0/28WqmezYBDmcnDFcC7gfepcJUAP0NCay1EoX8CeTJL2NiPIC+uqNGdDFL5yCX6wD5lMfz8IvV7QWKmIck+9F4eF720PlyqoN2MJGBchCTqHwLcDymUsMd8AUWuju7rG9MBUiTvOmzmZ5jN/ATdKE8B7qRrYyeiUr8fiSXHii8qAJdEoROzG7eRyqIP6k3caSyZrSAap6KMEduuU7o8A+xPPg4lWOQa3XN0QyJEiFv6gohsCf7lSqPTg46fkkcfvqabaAsppng3Imweo77wrOoPw/bXrij0AIBmQ/zcQUIr7zX0aD3dmVjLQfUS8/nvSPe8XZuzO+uEraCezlB1lOhnfb14lzqKHa7vseZ/j0VGxPwN8N/6nP2RBgxn0t1WKBlyXU6tYXXGpvB5tSXcKD8QOzGLO9y0pyJhl9BFo05vMcC4QwQ1t4PbGb1+XrBVpGvOLfCbgp/AsBqtr2/UZ6u4bA+zsH7aZtNMyeuc55C66TmkQsu/dko8a2wlXPekjx7U8/mWQqHDCJLddFePBF/lsUiTtg10N42rjurwoLe51B0kSvEPSMnjOvIWwn5EarbC1pTvQ2YZi28GuCBfJXaEcSVWrNigPz8GaY26QX/frNZpdfSxKqE4ZbuupVcC56r/e7VqDm3HnjqsTIOQFTC7jN46gNpSRaywa7bUX/kXRNF9rPqV84y/9K86puuwQua8YXHBuJyJpNqe49hf3dH0lWCNa87lqJmNakbZyM3WMi8FwEGVnUeqhj6EtIKJWenQZK0CcXXEmJxlaTaHPBiINjJ0/aNIhtZW5y/aPPJptszh86xR1zRoBA9EqvP+AylV/d8mGIsFcLCq80iTuU8oiK2va2toaxWAq6OPIQgplQ1DF8Mc56Zz9S4CPo/kTF9Idy/qaZ3UaEVgDHCPQVohHw/8X6RmoGsiyVIA3EZKAM9Aela1jQhRpzeYHxtYPaoFYH0G60cUzeqtRZ7r/RD7dysmFDVCj1Xw2DYxRZVU465tnlTa2DbXzOY71x29njXr6SdIy+BvIBl0HbdGw/X1wpe/d0U+aJkilY1q2PPeiFS0/TGSrXYDkr77fYO7/2UegwCc0Js7HID5HBWqIG+ZMst4EzJC4YOvUPJ1w5kTQHwFkt8IyvT37KJNIhtNxVIG33c/TH0H0sbnO0grnwvI5z1j1qYfw5MNsIix9VIE/sx9nzg/1memWaq/AYl3n4yknx6t//dLBfL5RTrSQgBcN470S5HukVereLWBhbdoHaX1LWrW3jH0LNCyRgET2IbUIm9Dwhbb9HGL+lyhUdsud7PW6XVZr9dhT31sQPpG7Yc0iduP7r7V/jzbRsBJKpz2PXyTQXvMq5/4M6Sh4PnApUgXzRhIY9Y36cOs/Przz7GVZ7b1ksfE/up+Hg+chBTI2KYHHwf+GmkvtZaCRvgLodDhZB+qYtW5SFXJ881zWox2Uv2w1BkDgMTQrRl6Q1g79QZfiUwq+CXS+/h6BelORjM1INQ/zyotug0y2uQuyISDuyJ5vweRj4GxgK5APNzGnTmr2nQbZRtp33MB0tLnUr3v19BddDPIwiYFbGAY2l1HplbcHcmvvw+Sa39QxJhsRqZ2vEfPvWmEvQUD2JYC2i4LbSRk9EIDnNRYt3FYYFuQ77s/2hrjW/Sm/QhJ0btYmcOOArEjdtP8jKJB52U3vFYfirYOaSl0d+ABemOPVbBXVHp4ABOhp5nzhS2gtyLljZcgTRp+rT9v1nVxi35dyD1Yp48NSALKgbpRH66gvbMysaKciN1Io/23qEGpRz5jVIwaZjFmBphrkeL2p5Orzu0+1LRsANcjFyU0KP8W0nPpMgekWFP0flTJClFZBKix//U0z5ZPhue3jIaw1Syg29A/57ei0L0ahtcZGua5oQtMSPPdVx/HOPa4A4mz3mTcp20KrlvpzThcb9jVbZBCmD0UqP0a7oeCmJuQQpqzkRDZf5NHbDrDCGrDFDO0jNW9rQpXjyMPD9nXaTO+fFTv/9yotP5MvSBXRWiMnZXrleZ+VIk+z0sLrLVtlxqes7dS6KOVQh2F1MNu6LNAq6P4XlgrFR71CAsMroztyNkx/xuYZQDiUo8OefaYHTR3vlrZ/9HNeqsC+AazRu1UESI/9wC43sdM23++rb75o/TkZsjHfM70EQb84h/WSvuZR1a5swrkhcDnkCkDv4hY2cz9b1Ig0sWaiWcFtC1G5xKzQXTMwrmzagbHKz0+MAJYr5YXUUIfL7SuzShdlxhFTZZBpBzk3qVuIy8q6/RrBqPq2vvXcWwsMUwpNdYxrM96wXvP671fpxb8c0gCytkRMQ3ysbN2Y/EzpQotcNbHAoVMq32BTyOF1ztVdLEfKB3CeiUFlCIW9kkMLQ6TDxK6QwEhM+ebqh7bRZZR3Ch8EE32C7nof4KvnRgRpaOU6j5IOOB4pLPEnu4z+zGo/Xxs21yvQW9c08/ztddhUAik34RD32EjGzPDWgyd7rfe0sj9Toa4FnYzrTlsdOidBdXUxw41eKc7w+Kb+WcFOol9TqcfgNOCxV/XhbYPkvnyQPUF1rjdPl3Eru4Xlpfv/XTBoNLeBPyX0vjvGrXYAm2pnSrttbB1zWnEUocLv6fS4ScgyS2HFbgnNrklGXLh1QewlvnItbNWoR1ZrIlTNq2fXqM7hjksYKbhaBOf4lgbcu0WuXC293VL3bgwFwvVjWrkI3JHdjQKduxABe+olvcBSPxzDUsvTEgj1gOKC/xnkVDPJ5CeSr8yF7AZseZLzaSxG1kncsOCtV2rlvZx6lbc3ekGc3RnzdSITzYsWiyeVtvi+PAZZyiOLRf57daaNAYs8pWWLdagN3Mv3OfYfUnNNdpNXu+OEXAxX7+mKvJ3ze9DynEpQ9sazhfMjHU5EPiMii27FUg15z8s1LFPCxRg35EwVaB+Sx/nqDroBbMsspuOAsCZEzfs+d9JQftEBfA6YwkTQ6HC5uMXS7qADS7Q85AT3HALbZuKIb9TYWSLinlb1dXZ6a5RXc93jaqlm5AEkzvoYxPdw8PDoO6QwthcgSJbWrBZpc5/XmPWXaiF36bXZR6pX34feew2cyzNUvHOqAFsnfa60sF/B+6N1Ghu7OO3DktLs4hfZT/YHBKT+4H6teeSF3JbkaY9pE+7FAHHdj4MU+6PA05FSiX3Nc+fc4LZHL2dSpIC0awfzWs6K7sbiWdfhCQl/EKV9j8oO2ot4TPXkdjl/khywWEquN1HN6wiCz0NSnVSIKDOu/uWOmHMsrtrkHbIdwP+URnhW/XrvYF7qK8brG7o35UOEEBHCuBwrAdepSeGA2/bWc1kAGXzvZIbjmb+ThfjT5G47YVqQSx9TiOiSseJOqMaCm2tHrqonwQ8ExmjWXM3v+6srN/k0gLa7AeO2YHXluZt1g3tbL0+lxsmQoQa+43C5uHGNg0bUtmsjwvN3++gi/NBSIL9UcYSDUqC6aeBlH0UGZcvIVlZzyAfY+uNUbhXVygYtyLjf36sG+l9kZ7XH9HnXYLEf2eM0Nd213xQSubiF6zLxAp+0Z56407Wr4cqvdrAwpP+20rlbtad7NdIPOwi/fCb+1z8IoU8tiCHHRGSOYtufw5W7CAkUeVZ+vntphNjELXIQvDVWLGfiViH3UjW2OeR0MNv+qjH2YiYSGyygqf7G5GJi49WF+IezpoFf7Hh9IgiMaysQe0ZeTpsuC/XAP+k7ti+6hYeiLQPfpoxJMeqAfkQMqA9sLHNZoP8a90Evug2+2Ez9UoFcFHLzv10Ud9RL8A+SMB7nd7YGb0h2/UDhQyW65Xm3ai71o2Rc2hGRJuRf84C0HvgHqw0+XnknSp3OB9osYvK0qkQCps3wuBm4AtI0fbP6K5zDVZ5nH2RY2mkweruoUB+KjJhYS/9fej3Xae7OMOzN0qk4TU1Ev+NZOBdpRviLcCXlUV8H+k5/VUF8cFIuO8Cfc68cV9sFCLoG/OO+S1bN8wiAPuujKNoV+JDJ1aZnaN4nOVSFl/Wx8e1G9XBSMH0c9QP9FZ0sQpsjXgShm0QfwMSz36/+rj+PDMGZOOUCODY4LdQaB+u3RHInKin6SYfwBqjzFYHGUaRXwp9bul13qnXeA2SVGOPm9X63kU3ns1IF9XT9X8a9Hb48KOClvUoKmZIiGch1SKil6em/WjuMBPtygBwrEAhRVIbnwv8he7E1n+F0UxCzOjNYgqb1rt1sVzlNjnrMy3XIkn6uCVe/An+8hOAZytFDZ91nrwBvhXBFrspDgPg8L7BH20pkG/U99yq1zxUn12hbDHkQv9Wv+/nv9dHqL2MHMDW18oKfNGiespsgF86TvrnEzNm1DeaUWHqb9WCYHbU2hB+4kIB7AdnfxV4swojYTFkfTbGSQKwF2ZwbGZP1U6epcLXeke/Y6GUUQK5Y9bt75DJkj/Rx6VqWTtDbgSJM0xWEKwxAQPXhgWwtybpAKrswZwNsSjKBLCdlnh/4DVIxlSgWs0SFpVvWt/QXf41yGDwDvE0yGyBLsG4riUR7aATYSt2kd9bLfLjkLZLDQe0DvGi/KWKWHadhvsQwnDf0Q30p+qzJxGhMStQjydurEtZs5GKduuinOtsCa9dtCPayRFtFd5CJ5F1evOa7ubFuuJ3hgC0p8kxv/dc4O+QcFDwJVuRz58QH1XDMiycQWHCxH32jmNm4Xw3AY9QID+IPIRjmU9SsCaSIUVJr+b7aRk+BnwBkqj0JXKlv+GAHAPwoBzzFQfgsjeGtGDhW4A8Hpk1exQLT0QZ5rDCTBoB9L8BL1Ofy7KBlX7EfMe7IF1dHqEW+uACGmyBHJulFWMlXmytOZckvIbNKLsaqRb6AKJa2/+bKLCuNAAXWQprBfdW4P4JeclWUsIiDVQyhE9C2Ketfva7Ijv8aqr5DXOR2g6ct0OK6u+PxJUPQ5TsvZbhHOeQIpl3IAkzUzEobaUA2CYLBKv7aKQi5G7k6Y0zJQCn5vy5ANIdSMuhj9Bd7dNmdc64DWEjKwi13d9vo/T69uQpnbdBatFDDvdaJwju1vsbFOWtSD7CreRtcUKqqbWma/U1Q1eNffT9Wkg8/nPEs94m6mhM+aKwGVXBCm5ERlS+nDzNMXRjKKPpXqzf9byKN18gT/eEIdukrNAjjdDbGbqLPLbo45I+VtxXoM2P2B1Zr4LbWt0I0grA5YG3YcDYRmKR/6o+b2hr0jC7fxmJA9Dd2CBFuul/wQk7Q7VIWQVW2MaP5wt0jSLhM8R1kwJfe9jU2n7N3Xc6X3iiqfS0W2Cbfnki0orzCKVVob1omM9UVsfM4FsHGv8W3URsL18vtKw2KxyrzPJ/S+kfqcBdw1iDwWGvbVGIyOdtT7wfPE0AtpbLzpLNgD9Cyh83GLAmRliyVncx9DmWTdVxvh1Ix5AzjLUoeq3VdmQFzGdQPnRZSUFZwevbyRlTMe1wWgBcp7vVD0YMegXwBvIc4wa96Zv9pp4v5KZbH7ZpfOBr9L0/jaTh1VexrzsMGCeBjWQD/PWpOKYBwLH86wDKNyHxVdTyljUVol5A30Ml03OQ6pdQsVLUqKw6qmNVAdhOgsB8vx4pBDiVvLTLdlEY9Q7qc2AtFf84Uq5mc32rhuzVUQGY7vKzAMz1SO+hZ5LX1K6jtylfOuLzsLWtKG1+JVI/2nGUOmFKEgGqY7qP2hScowXwekQkeqYCd468ZWfwi8vwX4JfbeuW1yHi2ZEG5La1TQXe6lh1FjhWBhhmL9WUNp9igDprrG2L0YeKbFODEOcN1+x2SNO3beZc/fSHYYBclMBfFMfMiA8bTwZcy37sgiGeW1RgkQ35mVbj4acrZCsZwLZEzfq/ITnijerzhmC+rSTK6FWfR8VMQjJGHYkvfxOZ67o/MunwMuf3WrGtKBned6q0fnuN3vI1m0sM3VlN2YiA4rtk+HLQrA/wY68DE14IMMY17csUs5UIYCsW+ebqr0TU5jn9eZ1b9LGuH4sFrW+VEuKDdaT1zV8hTdyfjbTheT7SDqcW8dc7EdD6FjlpZMe2mV2ho0SrYHGE+cMb1cUIg7wgb3GK8c9D3vYckiO8Hckj3q5uSVGGmHUNirqvZPSmTC5nLfNyArfhjE2CNNK7khL6Qk+KYOUvQgd4CtJRMDxnzRjOw7aDDY3nbgE+qH+7GKnt/R7wIqTt65UOoH5z8IPWYtbYJg+E5+yNJPcfQN6AfT+kxnZvJNl/o25qDWOtE3pHvnbMJhkEwB362Ir04d6sX69ChLqrkYaEuyKArtMbH48t5NVSPmk/ty0rnUemd1xDnoiUrTQAW583VKrcjzyzKUwnqLmfyxDNMAu/DnwSKf7+OXmnwhSZgXO9WuSrzO87BUKc717hx8HsgQyEvqe+5t2RXl17I1lmi01G6USYRkM3pn7jNNtIC5rfIyV2FyMdMy/R39nXXeeAnJn7uNpodLjfs7pOH4a0GvoaSx9N1A2YCSsnrJPnEO8JfBuZpRuSNJp0d3AoQ0Vv0z1jdgfS4+knuuhDX61wvm2zeNvOh/cNB2oOUHVk8sH99CYfS94hMbYovIvhdYJ+YpJnGUWtZHyv7FiHkuuRvt7nKAu50FwTuwmnq1TISszaOAF4iGo47VFfj8aEgbemVC1FRlccbQSkhrOQDcppR5o4X/RTyAiNMHluzvnGTT1nO9fXg9ZOQGgi7U0fjFRNPUAtrAVqOyKG1SMbgC2RrBUAtVHAMJIC/78W2dBSx0xur49HKj28CGma/iW6e1rbjXC1UejAIJ+INJVoOyFyxVngpvEXTkVanPhRJGWP57CL9xpkIuKbkcJuWxo4Y6yttza+x1Zq6PHDgCcjlVObnFXzOd62AXzHbBaxc60VKJwepEUim2/iXiughNA9NiZzm+tOJKX048hkia3m3voQ26COl34jyoYUIMsAY5HPmhXoAvN6r5+BNDH8PXllXGclAjhYlxbSWuUcJM5aRgucfn5LWIjXK/W5jO7w1qDwUI3e0aR3QJqeP5N83lSwSLHRoC16R6+Owi2wG4oNXTXpDt/V3TXJIqBOI+DymWqXIC1qPqx+tA2peBYVU62TAQCO9S4fVUgttjkUxctr5rOHHPg/Rga8vwJpbVunpOqmSQHwrAHIF5EJgHPGFxxHdYjt33wz0tXjZyrezBFXjm2TNC9gHYSEmp5L94S/OWe1rDW0cdg5ZPLgHxAV+DrdyW9Vym7LKmeQENJtEYV6b/N1D0Slrg8Qt1JjLekD4kFzjUNuerh3lyMJOB/Uc7fWuEF3aCrrA9akD7j913H53A2zbkIl3KuQsTwvR7qL1OieuZ2tRADPOOpsezWPq7Qr5kOeDzxGQVREq4KfGUakrtfP8VLyjou+zjSAKfjOITS2WSnoufr118oG5hfxeTboueyFJJ0cgvQHu4f64LfX5+Cou5+QaMMeg2p3gyuQkI/XDNMtz0PKPr8Sof3JEIJXrO2s1S06YxDM6vRWx4X3PRw4DRn7+irn89bpHoS2ogAcbsp+qvQeoMrvWrNrjYtGh/m+M3qjdqjQdIH+bquxunZuUVh8jwFeTT5apFVg5duGeYDUEJ+BFEZcRnwWzzBteLIhaeQeaiWOQtq7nqyAJsI0MnpTAge9vw2TWabQIu/8eFnE9UgjtNWDNua6rEOa0v2+BJAkbsPwUxrWIbODn6EA/neKM+2ylQjgcOPegyRFzLkLlYz5XCy93AqchUxkfInSQdujONzIfVSs+HNHlbxyHlN7Twder5Y2sJE0csP7Bf8HUU6/EP1GcEcF8qmIKh6ocH0B4qG/dvb/WoYy15Va/ifwWWRCwk2LcLkOVNfkRCT09lG17qOmqQ0HWNt3/I+Af1Am9QI1QHaiYY3Rzq+eOAAHMNwbGXmxwdHnMrpIDjqfjhNbGrrDnkZvyWIHaVJ+GpIf3aY3FZTITtzQRftnuoit79lxG8RC+jwVgZkCAcjXW69HBpT9JXAc3aEvhgCxb6IOvdMO2oZ5zCPjTn6lj6tU8LrF/P9aJNlkH3UFQkbaMeoeXIC07/2hPrc9IqW3iMncCWlZfCqSaPPPCuKW8e/75T2PNBd6OQCcRBS8TyADtefp7q1cBn32YpH1AeeM/xcW7cuQ/tLBhwn/29Jd9+1Ko1p0h2oS914hZrtGBalTyTNzvC+YDQBlGRuXTQiZQZrhvxoJd82b6+UV6TbdI2xsc7jU+dVWsPO+NpG/h2y7WPrsFcA7kTz0uTLAocdG1TKORSITJ+tG8kvdgH/IMuZ7jxvA9oOGNLMHIRU+TcqZ2E5kgdScSJNG1NcwiOwMurOeAojfgORDe0HF7+A2vhuaD7xYldkwo8lvaMuZuWSnB95VN6jH0BsVsID3WV0LsXKx2UOekgdQ34BkfX1emcvN+r4blb2tUUu9J92N4Nfq30Mq7h5uQ0rJG8MniJofBtkfppvYev3fLUhu/unG4CzbPRs3gBtmV16ri/fjSI2v3+XL9nNTeluZNpTGfUV39ot00abuZr9Hre88xQ3zPIADxfquAYQ9j0k6QhXTDv3+5cBr3aYX1NXGIoA7DLDtRnK9Uu2LkOKKDcChSq33VYDtacSyWcrJMvwYkhJ5qWOJy7bhjhvAdedb3AtJ2thIefNii/xubzmC73sh8FQkhGN7Pofn/Bvwp/RmicUsfWLodlhcz1SXoe4s2aTlC/vwztOQVkZ70T0gznZDqZV0r+b165oh3qPjrLuN13eci2PXWnDdOoYVhRDYDxW4Z9Fde77shRrjzoXuOBr9PL1IZVUW9aPROMsZvj/HnE/qbv47FLzhxvWLVfsa5Vkknvx95+tOcgtTm8v9GaWZnyCvYCqzcD9DGiiEESwx4LbcvYxpG1bx77fGQp573QD3WnV13quffeLKI2vLtCgyVRIfPwaL209htMflej4vUZpmExM6SGbWSyI7/TDvEz7fJUhq3TRMavDxy7XA11W42U5vH7JmCe8/Q3fNsX0EQDYVVI0+63nQNY6JbR9Dpia+RcFrGxpMzKY7Tgtcd4v6qUhIIOQEj+uiWNoaAHoxkr96oVrKtqGEHSRs8Dq6R6isWYDvFz77deRhpKJWO0wIoH3sOiS4fE7v2zsMQ6k7yluGgfHuhr0X0D+Eh3lO7Ppm5HnpP9d7/WW6J1rairKkhM86FRQ6MQv4ySWIH8NYxJTuEr1LVET7BXlOK8ZH3YTE+tZHaFM6AoAMYgbLfVjrFYS4dyIN/Z5Bd5gsKWkTiYHY/71fvjQO6D7GPoMo0O/VjekPxvK3IvdnYu5TbcwLIVy0o5BAPE4oGZdPF3bxm4C/UPA26U4FnNXvX44onu0+i2cQDQ2U746UUBM6RnfD0sfX6kJvqOhTH9P5pANEt37/13ECVChEOU8Z4d8jiretHioqsMhWG4BtuOSJatFalNdZo99inNEb+R4krNN0FiT0gD4BaVzXWuI5hs99V/X9l8PvH+U1nFXN4B1Tdu4hItAib0n8ZqT072uOJk9FF5FxAjgxdOUks7CTMZ+Dfb9zHWg9RXul+rrZEt4Ps+NvAu5rFlMypUAObOoMdUHWTTCryCIsYg3ShPAxSM3uLe6+T809GbcKnZI3a7Pizrj94POQ3Nsm3TOPMiMwPRhJm1usb2fps+0b/ZRJEUCWcA9Dd5BbkJZD03B0DPv6MKIwn0XeCcZqIxWAC+gLCoyNdOcVZ2NaeDUF70lI2dej6G6VE76vIZlWAfBL8e/adFe0PFb9/5RitXQaQByu2WfUb2xM8GcJBRlbkMKH5yG1176vmg+dTTxDGrcPXEN6BUF35k5W0ueyLW7CjboBUZo/BLzNUKwwmqWDNNN7pAHfUq5T4sC8DmkO36C4B9UkH4kDxW+QvtiTtsHYTLkZZVwPA/4VqbS6Lb09wSYxrXUiABwoyr6IAt1vkY/qBrbczZhBMnvepn/biiRs2NK68PzHI7m18yM4F7vLB7Hs2Uql2/Sm9U06fau7c+0g41UnaU1bPaOB9O9+gK6BtyOZZNuJ10b3859XNYBBaik3kcv5AWz1Ej6XbQIfbtK1+v0seZC+4XbgOnC8AV8ZPjhIhs9B5IpnWWykTC0hXNeLyItRlvv8wz0MG+fHEaX5PUh21ZcQxdm2451WPWLsAD5CQTNHvCPhqBdYEFzsBvIDpIuDHXOSmZt/KDIZwVqbMrKLDkT6f603fnY2JcD1wtAVSJbZJNHnGlKzux1pFnGCsp7v0V0eWgYDXHEAzgyA/UUuc9Pwu+unkWKEi41PmtBdVXM00tLWUv+shEW2GxHTPqqUrgwmUjaAwzXaTG/jv+U6gmbRRhrNvQCpJjpGmYJtidSZZutbFkUsWrCJWrfgC6bOXxn1+1khK1iKc5D2phbgPj/2UGNdkhKvR2huF5JaTlG/fNKHg/tYaUg/3WKu43JatND5pI3UDZ+F9K7aTi5SelY1taNfxmGBw83cQN750F7IegkAtn2RQtnfnAFO8JFtLWgoTjjAvEZWEsUK5xTSEB+OhLVmpkTIsnnHYQ3tnqBzW6Pr7TNIHfNO/Tnc/6YxXtMWBRgrgO1i3A9pUYITGcqwdHYoVxCIXq4gsQJMrInAGvNzWZS26b5P1RL/Kd2NAJIxuzoLpdFWyGotw7rt0NtUIBxfQmY379RreSvdc6cqC7zA99hAnsBhOz+WTblqSp++53xa6/+Erg+WWpV9bTr6nlYtf6FudN4fnmSLnC7TJmNLQiFvb1RDSh6fRd4SyG/WbbrjxBWAhzjWG4pYtlhjLUMN2KY+WjbEQtztQFaG2GaFMWsJ7kaeJ54t471ajJhVG6NFC0agYcAZKovORDKtdpi/+zY6K+YYB4XGUNNmHzGkLCtXQ1TSbUP+z2/NtemUeN2LBLxjC0AwaYvPim11JPFlXOcarGbQM25FYvtfRxozePCu2GOcItZaxtf3yne2uJm8UVk24H8uHNO1sWmeLWP57xCxzJPY9M7Wd69HsuzGuW5tItAGJMf9eXqvm+aa1Zy7VgF4kTRrTcHunJQI4HDsYriuiQmSFvhrY1nKOL+O0QGCGh67Lo0JF1nCOd/WADgZ0/uGdNkZZM7SKUgyiZ/XnKxE4I6TQoeLt9PsmOPYDW1m0y7zeZM+57pGd/CvDFiMS0179NSuQfds4n4++iQC+GAFcVksxV/3EOttIgkkpyD1vTPO562Zn+tUPvCSxJoWeUPwjO7BWeMQPQZRUfv79yFVS7aHdAywi1UwY0Je+Pk88/OkFsnX3WZ4DwVPu0SQ2OscOmrMI4Uh55MnlBSpyxWFXuIuvZPe4vZx7YjDvE9H/dA6Unp2mv7e9srK6G1qvpjP0DQbyxz5lIar6e4bPamH72l9bEnv06K7bny3vmfoAPInwLfobqqXFAB4RdLo2phuthWSmmO4mNkS/i8IH+9CWotCdwaX7Q1cG8E1tCGvzyOjXSz9X44xq4PWTOYEpKNKvI+p22TDe78OySP38fKEVXSMA8Dhgm9TEEN3jHYclmZmgdcjKMNhbKXN3fYVSos5/2BVGnpu65BSx/cV+MiT6PeGr4fro4z+Zg1jXSGPZHwYeBO9faymriB/GgAcjhvJK1bGnca2dki6a0M7DWSKwilI8zsfF15Kh3670MI9eAuiphZNu5sUCujzwx9m/N8yBKwQAgqb3rnAX9Odgjvu5oirzgLX1KKFJIl54r2IyrIWa8l7NiUDLGPY+Vu6eK5CmtC/zwGwtgQKHZIMgu/7MaTVS7PgmkyS/2anFNSRxn9l3MeQJmnZypVIm9+bHXXOWKXHuAv6f+VAvVgKOsz72dfdg7xR+7A+uxWcbkAawP+5Ck1NcpW44yxGLSKixMIhoXn815GZS0UKbjah6yYFjkQmNJS1CYdYeIJkV72Y7tGeVlle7jLGFQ3gcJEvJJ9SX/YC7ZjPF4Y+D3OTbcVKx1jiGlLNdBIyauUG56PNkzcN90kEYbh3xy24dyPjSW7U5/YLg0yaD4wykw3kg67LWDfBAr8eic83zL2ZhiFxKwrAFyFFBbMGZHXKmStrrd4e5CMxF3vU9bx/oxbzRAXgtWqRZ8in5dWcVWiYv9eRtj5PBl6qdHDaulJ2dFMM861mKKdAJVy7LwP/YjbLDtUxdgAnSj/PN/5mmW1k7FDu9eQ5xou15nPkFTA1ZJ7Si5Eh5c9CisevJm+WVjcCzHZk6t27VPQ5SRelLWiwyS2TfITr+nCkRVKrxLXZQkbfvBgpWJjWPtqlHY0xbxZtpIfwo+gu0yuzpU5HLcSdRkAb22YRB3Bej3Q+/Dgyvf5AJK1wvYL+FqQa6lrymmPbRN4WBUz64rTTJZ/tNrhR+sHh/l0KPBf4H/K5RkkF4uUBcLjo30CmwN12DO9lN4fDR7iIbajHjqq8SR+DGI+fWhjizJ0pAHAHUZ5P0A3J5h+Pik2Fzf5oZS5PRvqZ1Verr7vcFNruqr9EYnllzkWKAfiuDK9EF72ebd1i27lkzt9tIqGrGUO5LVW2z7fuxCRnElnL9wL9bLYeuDbi+9dAKsNOIw8/rrpEjUkCcLA0HaS9q7VEWQmLrW0EFpCBapvIG8rVF7mwsj5WIKimIce5ZcBZNGcX93rZhIE2lDsG6/dA8vE4syNgDjX3sK/3c+CNSqFtE8Kkgu7yADiozt9Cqm7Kev+6+4y7kI6YR0YAs1DwelYRmyWbUVz90g+sk0YNLWsIvu+LEVXf3tOlNiZs0Z1EE17r8Uqjkwq0kwHgENPbCnzELNoyi/qtoHWCWXQrtk9SCZtu6CB6EvA4etMml1rUkRm3xDKTA5BplhmroD3ONAA4Mbv1Z5Hh0HXKy8YKi8MCeKPZNJajtHGaDjvwfBb4GyQJx4twtSW+R9AKdpPPHt6FxMnfR6/4V4lYywTgIPjUkUymd5d8Q+zQZpCyt/uYc7HCTAXgYt0iRYo6Tqa7JfCorG+4/jP62I4oz+8kz2yb6gbsKwXAVoVtIEn83zaLZJS0L3y+4FOFHsxPLPBpKwD3MpiQ730A8A8FwFtqNMFuBk0krv50JEe8ZthSRaEnAMB2ImCCdOl4A90B+toIfKssskjC7x4D3JHeNjm1VQrSoiOkf3aAVyGJMG0DJgveUbCo0BLnhcj4z43kIbmiEssKwMv43m29ad9BUgzrDlS1EXyu1DyCEHMI8NjIouusQvDW+4C3iaQvPhkp4Qv3LPxv4q7vYhlMy33/NkQo20FeWNIZcv3WWWUb8XJ+WJvM8Cbgp7podkdo96gWbADsXyJpjx3ymPBqo2cZ3WpyQrcqvwvJdX6vuQ9rSrCCwcKGiq5DkBlRwdL36+NdY5X7xcv54a36uxXJ7rlBF0mdcsaaBItzBNIEPCR1rPaj7ja4NrA38H6k6siWC5YpOIbpDn8Y0qr7WHu/aR9JBeDRW4BAv9YCP0NapVhKO+qeWTYV76W629+6in1gz0zCNVgLnA7cX6nsTITujuoINddz+v5XIOmTg4oWbLJMzblN2Wq5n5PyIYNC/Angre4G1UpYMPOIkPW6yAJYrQAO4b060p/raQqqGef/jvo6BRZ0OvBq4CnIZIz6AAAHH75B9+iU2yGlo6sixp9cc+Bhk3IuDXPDPoiUq7UYbb1w2BSaZrd+DhLOajC5jdTH4coEcL5V2UnI4Q5KdJu8EUM6gvuQGA3iciTH+ka6q73SyLn6UkyQHPe7IN1BrkOKH3bSLbBNeq/tRYNmUhaRVaD/Qv2hJ6gVsK1rlhJ3TAx4w2iO04CLkXY/AcQrNWzhP5cFQxMpHAjgzYz1TUawVmwlV7jOTaXof6vgnaV7fnQ9QpfD9xuU4h+rP1+IFD9sifjHKzb8NCkAzsxiSnX3fL7e0EeSd+S3/ZmX4h+3zE3dDzhDqdvv6G6RuhKA7K/TjLGuofvmnkhW3LPd39KCTXYxx5yhvGHtXQf8GTLTd53xsesRC1xTK3sccDwyj+lKpE/Wd5DGCYPWWEWhS7bCNeOTpurPvB+pSmmbBRduaLLIzcLmQocN4Uykwdyt5rl1xjeMrexra8ePhKmIuxAhLzTrC5VFo9YEwjXfpqDbExEt34jkw8c247VId5PDFbQPQgag3wR8U92eH+hzQ/31rYY9rA7/Z0IA7JVQmyy/EYlFPtP8zoouixGxbMDf0vJPIOGs7cYCTbvflJjP23KW9P8A71AQ76a7TjodIXhDO5xnAP9pwBaAug4JV90JabxwT33chbx08UfIRIbPK90OwA2137YzyqpJypkUCm0tnVWeawqm5yI9pf7OWJLGEvxg31kj/O4UZM7tqcA1DujpFAPYnn+KJLG8TP3dGboHiJV1/LNa25P0Gh+uFvYO+nV/3aztcSVSdvpp4MfOtbGfa9XmSE+KBfYg8VlB4cY9G0m73GsJN82nWWYRkeZ8ZPLdz53oNY2H7c4J0lDw9cC93eaFag+hRW46wnu7C0nS2Y/unuCx4wZkHtWZ+tjs/GLvBlnFetU1vJskHzgwghgFahggPwQZQ3IEi4tN1oyf1HTUOgB1jfprr0Hik9kUClr+fO+pVvcU8znHUVIZqLsfqQrSuTNsHBcqYM9CogJZRNBKHFUuqiirfOAJscT2piTGlzoAeLMuRg/GtgN9aHtjpwtmETrt827D/38e+EekD3RIDvBDzooWUL95tWXQZBvvDO91D0TRfyaSHonxGW3KqmUh/Vrk+LGqXuDzNNwq/nZK5G5k1M5/IT2yL1Ag23ud0jvlogioq7Ld7KQBeJDAFRZBWGDPQ8oR9zUArDkf1yuqaR+xxYI6LOwmElv8F7XGN5jz8IOusyHOP/Y3+zX2nMRZoboDT82xiDrSiuZ5SBhu34i/WFvCJpsaQczGaoMuYZmRdU22KFDPVuBeTN4r289ero4VCmA78GpeqeHrgUc7i9eht7ldPxDHrDJ0J5L8ClFCP03e6nTGMINOxEJ4YA6ieVkfC2v9PusKhM93Z+ChSAngAw1FJeIqLIUu2+szT3eCjD12qRj4cyT08yNkhKplOU26SwbT1WxRVwuAMXQ47OCnIF0jDneWJo0sfIYEsJ/wEDaEq9Vf+yzwE7pjx1aAK7LM/cDj+0P7EFvb0dVDgfsho04eiqi5mOsyEwHvUkJFgZ2Eem5rYbcpYH+h1+Vn+v1N7rMXCVJ+w6sAvAIB3E+s2R8JjbwASbVrO39qnrzRehGI+/VeCpZi1vh3P0Hm95yrlPDaPr5ZMsTi9HTYHusQJfcItbDH6Ya1yfmcXlVvOQ1goaEx39O6YcSnLyIhniuVlVyLDGwjsqlBb2P7bIH3uzqmDMD96KS1JpZS3hd4EfAkQyPbTtgadtEmQ4I7RRqQX6pU+xdKF69XC7STPBSV9gFvgzyxYX8kRnookuQQHpvc+7YMzfcilQVw3fipHYaP+9o8ZO/XnqfM51vmd01685ctayjycyvwrmAAJwNAlkR83Icg3TcepaAIC9enYcasngWujaVaEO82Fq1e4APeotTyRvI2MXOOKoa2rWuQmVFhONoGPe8iQEF3KV2d7mbzNbozyqzKHChwTEBL3XX1n20zEvb5ljKPy/Wzdswmmjl3IjPXL3buFW1eJRZ4WD/N7vwnIors48i7PsSoZjuyGcRSNlN6h5vF6OEoMt0sIIIVbfY5Hw+CZkQLCD+3zXkWWeM5pEPGFchcqx8giS6/pbclTzZg463ocgXgoY5GAdCORLK5nogotuE5QYRabxZ2AIunfDGrNCg0Neh3fkEnBQCoRcCaRIS6egTcg/oq7zYi1DVIZdZv1CW4Ut0Dn1zhw1sVGCsAj8wCQ3dDcAvCTUh72acDD6A73NIpsLg+htoYAsDDgrdfHNh/JswGY4eC9bPg4Tpco0C8Tqn9Tfr979TKXoX0J7u14P1tIkvqtIGK/lYALg3MifMH5wxwjlOx69GIussA62XjqOMudKgVnJNNrPAbg6XbVyBZT98Avqd+a2wz6TdMLKU4LFYBuAJwqQJY5uifFa02IPHUhwGPQFIQG84yZxGfblyT83wd87DHzSqgXaWU+BJEOb6QPAnDgy/rwxoGJZpURwXgkQA21kEilk9rO4GkBsxHICr2g5Aa1QPoVYTn3fv5181GDOCU7mZtuxSUW/RctilgNytgfwf8Hgll3UJvRVUsLp1QTUGoADwhtDmlN9TkSxYz50/6aqgEmS18OFKCdy/gMAX0Xn2sYRkdNf3RUkv6FSSZ4gIFa9ERE58Ww2Iqy1sBeCosOAXWaKOC+hCkN9Mh+vN+iEC2AYnrhtraNnnIph8NTcnjqTW3Cdh5xh1D6deSt6u5FmnJGpJIfqP0ubKoK/RoVJegr79pLZelltuRbKtfuf+bReLMswZYs2op54d4X5vk0W9zsckaVtRaS57m2dHzrCp7KgCv+qPjfNsZB+oQqpkn7yAxDpbgffubIhtKndU3uK0CcHUU+n8Z3eJV1od+9yteKKoDXozFtNVKNgutVVHnCsDVUQzqbAj6vVxHRZ1XwfH/AYV6AAseBfvoAAAAAElFTkSuQmCC" alt="Garena">`;
+const DISCORD = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>`;
+const GLOBE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>`;
+const DF_LOGO = `<img src="data:image/jpeg;base64,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" alt="Delta Force">`;
+const LIQUIPEDIA = `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAABVCAYAAACCViA6AAAkLUlEQVR42uV9eXxU5bn/93nfc2YmKwmEILLvkCACQUAoxLKIsiguo612UalX7e2i9afXe2kbU6u1rfXWe2ttrdZWWpeOWhVQUaykFxdUULawL2HJvu8z533f5/fHOTNJIChLJkB9P5/zST7JzJkz53ue77M/L+GLvQjII+SuEbG/FFxkgHzzue/MWZiIJqeHbfl6GzZ9BSiTgYHM3J+A/kzUF0AGMWdCSg1t8lThioeBPHFc5++6L/gFBTY3V6KgQHX+7zyB4et6+XzorYXdj405VxANYMP9iXAuA30B6kngngAlQQgbRO1uJwMc/WkAEgCbiAU5vHXrKwe7E2Triym1YBQUKOTmWr6qlOEacjSxHs7Mowg0jGl9f2LZ2xClEQmQZQEgkHRBI/aAAwPu7wxmBsBg96XeR7mos2GQ8Cml+wM4CBR2m2BZX0hwx81Nktr/H6gUQQMeToIsCNtFhT0AybjgGWXA1E7amI4A0Duv9/uxoWNI0+2MaZ25QByhGzMzGaGQJzYne04Gsq5JlqplFdn+adCOB6KjweSel5jaAUYACRDEKWo1BiBgXA74ogJMCAbdGxkKaYF8pgKYdloNHrrC+/XEVm6uRAEpCwtugB2YBiccBrHtAkmyDbd4CBkDRGCBLxzAHUBFKKTdPw8KGNhjYCeMgaS+ABiO3oXMwNsoWd8co9qTudXEk4i1ASBd66cbl/HudxBA6F8X4M5BHXVZis/GTK314oSEwKzsEYOGjh01FAPP7QMC8On2PXj1zXe3KX/qV2n/Oxv5pC1Rqm6nO7t3/QtLcOegZuUmS9EjF+DFBDMP0h6glUGf3j2x9q+/gCWlbiepHHpr3Zjrvp33p6XIvSAf92og//ivIDOTPSlaDcF3ACy63Us03Q+wiDOoEsGgJIBlKKRlKKSzcr+dLMcumC+zFv3BQkohEa0gYX0LEAOMihifRWrPrv3mnx9tgdJahiOO5ShtaWOs4NwpZux5I8bno3iEALHrTx7nch8q0on93mKttkBa5Pk63bEYIECc/UZWTFIpFNIiFNIgQGNUipZWLnqlLy4s2XuxHQgMYEGA0W1uCEEAJIQQAo6D514rwKyp54NAkFLAMBMA9ExLBeCkurJ3gv5kbq5EweMOj110H5F4HgzTrUJMZ7UE5wm0k1TGqBTtG7tAZ1z4ROrEsVsvufGq5U/94adLLp87fYBTW2ckawXWxnNDrOi1aGNAiQG8+s461DU0QUoBZoYgYgDU1NTMALW4fJt1YoZWQYEC8oTZsvwF1pF1kLYEs+4+imbrLJbgfIO+OYm6Kvxl9Ei9InVg34un54wdsHjudMybPgGD+mYYAOZL40eItwo+FI7WgoTwAkDtuIwZPr8fZUUleOXtD/CNxbOhtIFtSUSURlVNfSsQqfY+8ySus5AAaDJ8N4gLukUPe1+RhXAFqrz8bIpkBSUhpOWweRfaSYFlFy2aMOyKudMwb/oEDPRABSCMYeEoJYYPPBffX3IVfvarpxDolQalOhEgZkAKPPX3t/CNxbMhXKOXy6vrqaymrhw4XM4dbt2JrJBGMChVKPRPK2vB32D5roFylMci8Y2h6e6X4C6g6CwWBKhI5IHH7vvBsNd+nxe5+eq5emDfDGMMC6W1ZZiFEASfbcEYxn/efA2Gjh6KSHMLhDj6YdbGwEpKwNoPN2Pjjn2QUgAA7z9cjoaqur0ERDjPVQkndcmhLAZAyhL3QKsmTzcy4o3wWa2DlWpJTvQbA8hwxJFRUC0poxIIIgKDkZKUgF/dczNMRIGO4ZJaUkI1NuPJF1bF5HrTriKgpm6jBIA1a07h2vMNgkGBTcv3MczvIW0CI4662AuDsjkLAc5dI8AAGhqW/2XFO0IALIWIgXrkkkJAa4PFsy9E8Iq5CNfUw5KyUykWyQl4dsUalFXWAABt2LILaGre0CXfPBRiAKSl+A20agVR3KVYkjwLAS64yGgA6YMGrXh91f+1rCj4yLIsyUofWyBIEJgZ/33Pzcjo2xsqEjnqgWBm+Hw+VB4qxTMr1gCA3Lx9D+C0bjXe555y2AF5hE3L94HN/0FIAsfZL+azkqLzDZAnagtfPeho/d51tz+IT7btMZaUULrz+yWIYAyjX59eeHjprVBNLSAhOvEqGOT344kXVnFDcytq6uubgLoS73O5S9jHzd6u8ZJHcZVgprPSyHJvFDPDn5T0YmNLBAu/9SPefaAYlhTQx5BkKV2q/vpls3D1lXMRrqmDZXV8wI0xsBMDKCzcjb8ufwdJgUATUNnSZSi44Utmxk4wR1OF8UT4LDWyCgoMALREIit9ftlaXFppzV/yQy6uqIaUEtp0LslELlU/+qNv49yB58JpCUMcKcnMkD4b/7PsVdTUN1pI7S/icOObPPUbZ//0bJVgV58JFK44oJV6N9AjFbt2F5n5S36Iipp617DqBGQhXKrO7JWGx++/HdpxQEfcZZIC2tHYtrsI5dV1qeid1dOV4LxTB8MLODCZNLduKs6u0lntJkWrLwgvKm0QSE3hjZt2YMG3fojqusZjgiylgNIaC3IvwJ23fRXh6lpIS4KIQEQIV9XivDFDqWDZL/QluVMsebB4LAMdqz1O9b6TOK+DO3PmULSbsMnNtWJHMChPBLeuA9ijacW0EtppUVpbgbQU/ujjLbjkpqWoqm04NshCQmuDB++4ATMumozW+kYYraFaw7j7e1/H+6FHMPOCsTxn2gTolKQrLALH0n+nds0aAFlSXCxcGyu+FH18RhYhNzcam2eEQhoFBSp2uFkxA0B4r6PPC6B14XKT8Fb2gtUQ9mxoR1u2JVtr65EzIRsrn7gPfXqlQWl9lO9rjIEQAgdLKjBu0W2wLYmnf3kXLpkxyS2bYsNVtQ0YM/+WJt65J6u65uNDhDw6+fLToARCJiFn8QUt1Y0fQBD7kxKFMeao+HgXuEcKlm1BOXmqcMVPkJtrHV2ymycQLKS2qhYAWfPPkWSPZlaDBCGNhGgxGge0bTZj48rDbV8lKDu8r73wdOkXyYVEUZERmaOSIeQCGGMMs/AlJuDg/sN4fe0GLJw1FempyVBadzCoiAjGGKSlJmPGpLH4ztcvx9TzR7uvIwIzKCUpwUQ0B15f/X7/ByLFITOxwUJJyckBnJNgidIS7dh9H7vxa4tHEZE5tKtIGEvC57PRxRgbCCmY9Tqu2PUPDB4sUFRk2oDNFCj8rUFhIeO8S/pbvbNuFH1GPihA95MQt5C0FkPIS0BiERG+JjT/m+gzaq7IHBkwqUN3Ye2rrZ6wUnwBLroBQAGbjOHlAnwriHwA2BgmX2IAJYfL8Mo/PsDs6RNxTkY6lDoaZGbGwHMzkZGW6sakZVQfA8wspo0frd/ctHvswaJInV20/j2Tk2OjpOTE4MgK+qzNqx2dOOErE2ZM/q/Xfpenv7F4juzZOx2FO/ejuqQCsC3YlgXTNUgbCCmI9QFTsetFJE22cFE2UBh0GaiwkO3RC8ZSnzH3SRaPQlqLARoMcACsDYzRMMbAGOOxsx9CDoGQC4UQX0HmiCau2LmhjUULOE4U3YGm34awZ0E72gsDQloS4YZmZGak4YXf5mFGTvYx6RqgoxIRHo3zobIqk3vdXXLvx5u+azWu/40ygEd7+rPDjXkCWCMkFSidMeVLyX3Pef29Fx5JzB4xiIiZiAiVNfV4+KkX8dhfV6C2ohpWarLr6ml9agCTEGBTpLauGNL+Gu1xl01gzd8B4XoIyw+tADbaRYbEMTByK++ZGEJYEBLQ6lXl1C/BzoLK9p0TXW+2d0LT0bpiNgw74Ed9QxOeW/4ORgwZgPNGDgYzd0g6RC3ozvxmYwz1SEmiy+ZM5YLC/QuKSzhjXPCr/6xc8WyYo/qod2+JyZMJ2dkCvXtLjxJZoIClOGB0yqSvJA3o99yLj92bMm38aBhjSAjXmk9OTMDsCyfgmvkzETYGG7ftRaS+ETLgjxUfnJSDBGMgrHTqPTzdOmdkhcwYuVD0HvUAGD+HtCbCaAtGaxAIROIzwPXOF63XNq6EW/YYEvZ8Th26HNVP1kWNtLhJsH/coiFa8zYAfu+JpTb/V0ArBR1xcO8d38TSW78C8RkJis4SEVIINDa36jsefFI+sezlraio+ilS+70qS1c0E3cUYzfDD3AgZwqS/XdOnJ4T/P1Pv4dJ2cON1kZ46chYDNwYjqYosXH7Pvzi8efx3MoCmEgEdnLSqRhh7Ma8DSCsaOcEwKxdUE+BUZkdWD6bldqoI85M7J7SCOTHLXJDAFhmLfhY2r4caMcYbu+SMWzbh5aKalx11Vw896t7XIDF8V+OMRx9vX7r/Y3yoSdfxJoPP90TKa1cg8bmT9ASOQwYDb8/Ewn+bPRKnzFuzLBJS65dgFuvnWd8tkXaGJKic0/RMIPbAf3Bp9vwwGPPYWXBR5C2dQogs3Gr4L3ExqkCexTIfpudyF/1thVf8woejwesPEKwXYFbKIu9chlu0wntadp1A6yxlz2lIuoGGK0CSQFLa9cFsSyJ1poGzJk9Baue+GmMjukEy5WZ3Z4vIYQBgB37i8W7n2zHll1FKK2shlIavdJ6YOSQfpg6biQmnzccUggNQEbdsiNZobMHSWsN27awbtMOTL3iO/AlJXp2whm4GArSslipOXrbiretz6Ta3DXC9dfymUJtURE+AlHOyxMoLKR2tUZWHmAeaG6pmjljMkpKS7Fr007I9FT4/T601Ddh+MhBeO5hV3LbSeMJRqBcXa2NEYIIowafa0YNPtd0YkCyp5OE1kYKQUfFvKPgHgm0EARmN0BTWVMPGD6ze27dYA0T8VIAb3d+re0d55wc21aDRzqVFQNxuDgR0HUAVwBWFdBQA5Q1iSOcMCbAEoRwyqS3X37p0VmzJo/VeY88LR//2+toqqpFIDUFa0P/jZys4ceUnJMyVQ3DRJnPu5poeJmIIEh06GmIGnd7DpZg/ZZduObSmTF6BhCzCbQ2kFLgH+s2Yvb1d8GXGIAxfCbDzABp0jyFjhHZYoxbNEQaupXAlxulRg4fMpC+NGksGpuase9AMcoqa5rqG1saGltaKlVTSzlaI2Vobj0M7ZQCQkOK3CmXzlz8+uP5nJ6aTACwY98h/PihP2Lm9In49+sWduoidfNdABuGoxRmXH8XfErhR3fehHlfmtghuhb9uWnnPky84rsnrEpOwzfTELZko+6jIw0jALCyF90NoqUQMpXYgLVCekqSWTznQr7p6kto6vjRAgCq65twqKwKVbUNKK+uQ2llLUora6CVwpihA3DNvGlI8p525jaDJSol4gy4UVEGeW9DIaYvuAVITsLF0yfgt/d9H8MGnOMWHXgMUNfQhNHz/w1lFTWwTsnQijvABsISrFUBdZDcQbl+Kzl1GSz7aigHYFYgFgCR0prQ2AzYNiZNGI0br5zHwUtnoHfPHtyJWo6eUzK3tXq5tMbH9HNPN8g3Lv01/vTnvwOWhf4DzsGLj+bhgvNGeGFLhhACl978Y7zx5loE0lKhtD5zKZqIwKZYukAEBZBNVj96CZZvMVTYAUG4+Uu3lkUKATspAdJn4eDBUry2ai098fLbtGnnPvLbtji3Ty/hs20BQBhjRMRRIqrH2lvJZxq47akrd9JYrPmkEJV1jWhuaUV1QyMumzUVlhQw7Bpc/c/phWWvvA06jarlOL8SwAhQ1KCSWfN/TnbC3VCtEYB8n5lj9IIS4YgDbm4BLImRwwdhfu4FuGLuNEwdPwY+2zrKmDmjtZbHNBFHYceeA8jISEffjPROJf2OBx/Hr3/zDAIZxyjcP9OQtkcvnMiW+BhsjOdOHBcaRK67wcyItIaB1jDg92P0iIG4eNpEXDIjB9NystEjObFjKOuMBfmzH8So393SGsHEK7+DXXsOwk4InLk+MRB2AT5v0Usk7CuME44lBk50CQ9sbQyc1jDQGgH8PvRJT8UPbrkGd30rCNOFLlE8QWZPnDszAqNS/I91GzHn+rtgJwbcITtnnA4WxKz3CV/OlaOdcGR+pLmZhRTCkhJSihOmVMMMpbVbz5zgR6BnDwSSE1BWXoXsEYO9CTY441eUlT6vcH/WlPPx7zdcgUhNPaR1puljNiBiYmwVpqru6mFDBvmHDuprIk2t1Fpdi3B9E5yIAyK39cSSElK4oB8P7FG3qLWuEV+eNRULci+AOcJNOpuXWyxo8MAd38Sw0cMQbmo5uhr0tKteIoDekCah371/+OXdQ379nzfjoqnn05ChA+BPDKDVUaitb4BqaIJqDUMrBQO3K0F6gAshQMKlMjd9STGXSAgB3RrGr5beijHDBritKOJfA2AigmFGwO/DmOEDseylNyF99pniFzNIEoyuVcb5rmX1TBs9clBfBPw+mjNtAuZMmwAAqG9sxva9B7F55358un0vNu3Yh/2Hy1BaWYNIYzOgVKzNE0IClgSkgBTCbRwLhzF81BDMnzkJDLew7kwymE51SS9/PHfaBNz6jcX43ROhY7fDdi+8GtKy2ISXYfuqEqtHSmJGz9RkMDNFKx4FCaQmJ2LyuFGYPG5U7L2NzS04XFaNfYdKUXS4DLuKirHvcBlKKqpRXlWLmvpGNLW0wnE0TEUNgrdci4Dfd1pCknsPlWJo/3PiDrIxjAd/cANW/fMjFB0shRXwn0armg2EFNBOjQb/DABZUko7alRF9WxUAkzUovS+THJiAkYN6YdRQ/odderWcASNzS2ormtETX0jamrqMXHsiNh7u1tyNxTuQb/MXgj4fXGmaoMeKUl49N7vYP4374Fb33CaZBdkIKRlHOc2bHutFMGgtFrDkZbWsJMQNXKp3cXLTjr+mL2fHbI0hIDfh4Dfh4z0Hp3eiO4GeNP2fbhw/Gj075MRV7qOUvWlMyZhyfWL8OSfXkagV4/upWq3IoQgfRac8FKzbeXz0QCWaGhoKqmoqXfx/RwjwXUh3Kk3R1rXUf/RGIY2BtHk/umISAHA3oMl2LR9X8yFi+eKUvUv71qCgcMHINLceiIGJXuDYNxpjcwaDNV2sPbGPUXndHoHe69lDWlLkCDo8O1q28oHgLZ0r+Ca+q2Few+x693wKdFV7AEQ4qR86a7hKfc7RJTCijUfxqQ63lY1g5GemoxH874D46gTiNoRwfK5AJEQkLaEZVuwfBYs24K0JYQlQFH9GQ3oSwHLJyFtyazfgzEz1daVj3gF/TH6EGhofOuddRvJc3JOmR6N4TPCXchI74HQG/8HRylIcexqSO6i+EuUqhdeNBk3fHUBwrX1R7XDdqIzGUAzlHMniC+EMTPY6Kug1PdYRR6Adv4MrVaxURtg9EEw1wEcBnM9M++EUcuYzUK9Zfl0Vbhirdu31LHDwQLrl98oWHd/bUNzcmpSImtjKBrF4fZ3ISob3LEJj9zhIm2BkDMk4Ny/Ty9Ubt+LV/+xDlddPD1myUerPrwBa7GyUmOYon8X4uQyXtHyo4fuXoLVa9ejpKwK0m93Xv3B0LAsi7XznC5c8fDnnnxQbgApqT0gkIiI1Yo+1RUd21/yBEL5Ryl+KXVFfUNT8sjegwZMmD5+pBZEon1ar/0hPAoWXpAjWgkZfSAam1ux92AJIo5CSlJizLhh7lg6E89l3CI87CoqxvLX/ondlTVYcvXFMf0spTBCCC0EMQBhYulp4ujfiYi0NnSidWLkTS5ISgxg6MC+ePalt2D5/cdiD9elYX6Vs/quxZgxNnZPAILtarknTyYUZgugkFFXpFC+swllO2tRub0RRUUGwaBEdrZAYSG372boIMGKQQGB+3/+u2e+OntytpXZM9VLnDG0NlDaIByJoDXsoKm1FfWNzaitb0RFdT0qaupQUl6N0soaFJe7lR2H9h/G04/8F65f9GU4SsObtMPk0hEZw3QyBXbHH6OjmARzeio2rN+K3z6zEt/7+mUMwOw5VCZXrf1EvLehEPsOHOKGlnCLFCQy0tMC2SOHWLOnno85F45Dgt+nmVkycEKVJ9KbarB49oW4/tpL8ddnVyLQ8zOsajb9ve0FALyhP2PMsHcReRQbX3GMhrMj3uTx9rA5d/pT0x4KSDgg2GC3Jskww1EajlJgRwHaAMYA0WoGIkAIL5Ll2grrX/pfnD9qSLSc1WhjrJKKWvTJ6AFbSrSv8uhyCfYqNHcfKMZ5l30b4dYw0lKTzdO/uFu8uPoD/O2V1fuaD5cuR339GujGXUBzLWBbQGJv+JPPR0avBSOzhs2/41tB363XzDMAPrN++lgsAgBVNfU4/7Jvo7yiGtJnH2HNx8pqPtGFK3PaK8MuDkoDQFAShTTGzH8SwncTVNgByCJPwbq2G7VVZ1C7fSfQthOF4zhI75GCg+88bRICPmzaWSSefuUdvFnwQWT/4bIDA/tkDHv64XtoYtYwjraLxMNNiibusxfeit17D2orIVGq5uZKVFTlw9/yJ6uysJG5Y19HtCqUAWhrTDZ6pN978eWzr/7Dfd/FwL69WWtDx0qWRCm4vfqJVmK+sGotgrfkwZ+afGRvtAcmKSHV2Mim13fGYzcWz8wrBJAn8r7db/l7hcUDhC8wSRCTIFJCEJF35Yy2fKlpd7i6FqxaI2bowL7IOW+UuPPBJ+j//ez3m9e+svoX5Vt3/SBS+m5+xZ6GHetKqq5cctXFLN0Tx8FlcW+ubUms37JTb9y8RwYS/R8nJCZfova/tQrNFRGTm2vx5MnEW4PEKCBGHjEyhcntLXn/ZBKmoEy2Hgrt2l5b/OK7n86bOWW81a9PT9PeAO3MRdTaxOq7hSAorTF2xGDsOFiKjRu2wk5KAJt2jX8MDcu2WfF+U7Hz/WhfVxwkuMPvbGUvuh2gn0LKJHfjCii3oDo2Ap9iHoabHWcQLJBEIOBDU3PLet5V9DDG+ULWhvWO8XqFhAD04NmfvP/3x8ZPHTfCaGNEPMKYnsVs7n/8BfHDe/9n85cmDshdu/KZGuTk2Fi/Xn0+FbrN2NYLIa0Sx8/JyB75csGzv0rIGtq/gw0RNSJLKmrgKIWBfXuD2Q30CGrbiKWiqhbjFt2Giqpa2H5fG1V7QQrWzru6cOWXXE7p2jES4mjKyBNq6/JfC45MhlbPABSGZVsQtvQ4qK0Ss71jDhiA325saAhyMGeyVJufofXrHTUz1zLIE5ybaykDooamjzbu2O+pqq73lw0zLCm5rKoOj/3l1SZfOHLtuyufqUFuroX1653j03P5BqGQVmOyfLL509WVm7ddF/z+A9TUEjYdAydu2jAx4MNt9/4GTzz/eiyHHi0aYMPok5GO3+Z/FxYd8eFEAkYxgSb7sxYNx4kOOT9+im6/ChjBoNQFr5abip0vmT4jXxAGpczaIiABQKLXPOUAVArmj8D8FMG6U2195Zeo2l2IggJmBCVQCJdyChiDB4v7i4qMkZmTp8y8YObMnCzjzrPsWgn2itT1T373N/nGX15+iBrWP286HZlwHKuiQnNOjm0d/HRbWbFO5x7pF865cJw2xp3DSeQadQkBP3qmpeAr19+N5ws+xK79xUgI+NCvT0YsX66NwR9feBO640PdRtNGF8WDpjvvTQqFdOxJ2pK/XQH3A7gf5y1I90FmcsTxCbYaw1agAoWhxg4XHAwKd3+jTkx4AsAm4kRdhq4ehcEMKSXXNbZYf3nlrYbElvBvmgAib0DMSa3169VSQDwpwj957C8vf+1718/vdU5GGrPXMB7tGb50xiTkP3A7amvqcf6YYUhPTY6lbxylcdN//jdamprhT07qaGwRE5jBxFcAeBincq0nt/I+Z5pL9P+fQy25uZZFABLH/9fS/32GmdlxHMVduRylmZnVK+98zDh3xksCAPK6gPKCQTeb3XPKY79/4S1mZicccTp8tjFHX4/SmpmZ7330GUa/XPaPu5yt7IWdHcbKXhh2adq7p3HQwcfWRy69ednEPNF2gNr+f5zmvWGtdbweUjeYunbDVoiqunc0QKc2dthb5eWkAJJ19W+8/d4nAEA+23KzZsZ0sN6V1tDawNEaUgis37obD/zPMvjSUmCO1QnB0JC2T4MXucKwpjsBPvIO5pu24wRJ1p0W2AZwF3tJntsl9h0sgQmHd1roqnlaFxkBsMzM3FHw/gZz90N/lNt2H2ApRFvbqeciuQaWq3cjjsLNP3oEEccBSXHsm9VG01e6n9d1NN39VXDEWseppCW6Y2RLaxiAaXHtia44sxsajJR8VJvRK63FMCP74pvwldt/htXvboiFKIlc31cpV3p/8tiz+OTDzQikJOGzWYsEjAKBJsOladNVNH0ayhzjR9GegWpSk5MAiDRXf3blJyShvqEZD921BDd8dQGef+olzF2yFFOu/j4ef/41VNc1wJIStm3hg43b8fNHn4EvLQVaHUfImKEgbZ/VxTTd/QAb1trEp5wlmtAcMWQARHLSWAVQ1+xwkueFLHqlJgR8CcyM3/743zFp7jRAaXy4aQduueuXGLfoNtzzq6ewYetu3Hbvo1BKudOTjo/ZjqRpfZZKsFDxkuBodfaMnCyYnj0ulgB3wWR4IFjoAiytQQP6nSOIyPh8Ni375V1ITUmCFAIJvdJwuKwKP3/kaVxwze3YuGMvrMQEHL86aqNpf/Ylw1yL5dRpulsB9hjUxAtgL2gipp8/koeMHjrdSh6fxchnN2N2alY0AYBfjh87aggAGEGE0UP6Y8WTP0WCbUE5Cj6/jUB6DwgvmnWC8xBjNK3ZuqyraPo0SDDFjCzqYjPac1UoIeDTNwfnWxHbd7dN4FPWw5mZLlSpyRMnjB6G1oiDPQdLUPDRZuzadxi9+/SCdhSYEWsKP+kwLLMCMC9qvccnkhVvHRzHzngvESBvu3aeeXTZK9eXb5SPUCj0CePoeqXjlqxQyGiARHpa1r3/uwx5v/6jqKhtQHNDk9sym5QI6+RbV7jdzCwL0gYrpziqGk7VCzg9VrQrwXFJ+XtpO0pLSeL873/DcvzioS6oIGFkXZwuiAbsP1CMosPl1NoagS/gR6BnGmzbOlE65ljJKxHBsiUsWwJUB6flWe3o/4g+WGchRZs4RrK8LyUFjDFyyZWz9QWzLpylU3KuFN6WdidjQQOAD4FzQEizfRZ8Pju6I2qsZfaEQZW2hOWTYNRD6eWk1E3KMtlq64rrsPuNCnRRwedp2AFctFF0nMp2yI0UAAD94gc38KwPPv3Z18d/87U/h/4cwQlvD+9O+DNEaV5TtVvecKL0K4SEsKRrKDh1YF1AxC87Qr2FzW8cameySyBk0EWpmO6T4NgO3PGLZLVf3vYB4qILss1ll80Z+ef1W26UgEFu7olJcTCKlOOHu8Utn5ykch2MeoVY3aiUyFJbl1/ubFnxlAtu+4ROSKML82ynQYIp7hR95Afee9u1/NqqNf8xpnbc05sKCppPSIrdjSwh2ZQZNgSQxhGD/RCrbPEkVVoSIEA7tWD1T2J6yUlw3sT6VSXtqD86KtKN6xcgLjflNIUqu6cxy+sZEuNHDzbz5swYtKkG8yTA0V3Kj2/lGwAiUjhlOwyvhhWw0L5kKVrZYvmikloLrV82St2otJ2ltq643Clc/mcX3PaSGsvSxfVpPz1GlmdFd0cThDe7ki+dkcMI2FPJC1yceIwmn5Wgr0FHXgSo2eslIgAOs9kHo543OvJNF9TlV5jC5X/C9r+7oLrGHR2Reu2W1f0UrUW3SHC0m8IrwOOEgJ8hhH0KQTjCluVlCrgaWQsHWhD9AQfCUEXE0Qew+41wJ/Sr3founLZlnUYJ7gIQOfbzyPYYKQQTiAM+n9EG4k8vviVkRK0y7Q2+kwEZeYTC/AMKONDRGAtKlJdTDNQCnLHDs+K0vLIXjPryrBuXMjNr7ZW0dLaMMWyMYa0NK63ZUSp2eKUwxjs0MytmdrxDMbNxlOb9xRX8/Kr3efp1dzP6znjILQjoijxrnnDdmaBsq2w5M9fpsKKN0ZoNAG1cN7F9t6I3UI2jtfZEYBw9ZUsAEGFHoaa+icqq6lBcUY3dB0qx92AJ9hQdwr4DxY0HSioO1BdXfoz6umWi+dPV7izvrugcyD9rpPO0ULRikAC0cPtnj9w/QwCgsKNR09BENfVNKKuqRXlVHQ6XV+FQSQUOlZajuLQCZVW1tZXVdRW1jU2Hua7xIBqa9qKpaR9M826gsQioLpaAcVvnIeJtsX7BAQ4ZBVDKOZk7thTuqnxh9bqMvhlpOFRahYqaOpRWVLvTeiqrUV5V01pV21BX29BUVVPfUGWaWkvQ3FyKpsghNDcfAlpKgMYSIFwFNFYDMLGp8+T2B0R9GH11ULpGTkjjC7i6WXd4zVWDZn0ZQtwDAQuNrYfQ3FyKsFOMSEsxoMrbwGuoBaA7bBlAHXcCYQD84zzRoXqyIJOBLPZqqRhf4PX/AYtLN7/WlicoAAAAAElFTkSuQmCC" alt="Liquipedia" style="padding:6px;object-fit:contain">`;
+const SITES = [
+  {name:"Delta Force Community PH", handle:"@dfcommunityph", url:"https://www.tiktok.com/@dfcommunityph", description:"Delta Force community page for players in the Philippines, on TikTok.", category:"Community", tags:["TikTok","Delta Force","Philippines"], icon:TIKTOK, flag:PH_FLAG}
+  ,{name:"Delta Force Community MY", handle:"@dfcommunitymy", url:"https://www.tiktok.com/@dfcommunitymy", description:"Delta Force community page for players in Malaysia, on TikTok.", category:"Community", tags:["TikTok","Delta Force","Malaysia"], icon:TIKTOK, flag:MY_FLAG}
+  ,{name:"Delta Force Community ID", handle:"@dfcommunityid", url:"https://www.tiktok.com/@dfcommunityid", description:"Delta Force community page for players in Indonesia, on TikTok.", category:"Community", tags:["TikTok","Delta Force","Indonesia"], icon:TIKTOK, flag:ID_FLAG}
+  ,{name:"Clan Recognition Form PH", pin:true, handle:"Google Form", url:"https://forms.gle/fjiy3rwVZwT8xwVNA", description:"Application form for clans to be recognized by Delta Force Community Philippines.", category:"Forms", tags:["Google Form","Clan","Philippines"], icon:GFORM, bg:"#7248b9", flag:PH_FLAG}
+  ,{name:"Official Clan Registration SG/MY/PH", handle:"Google Form", url:"https://forms.gle/kaJQ1NkUECtB98S76", description:"Garena Delta Force official clan registration for Singapore, Malaysia and the Philippines.", category:"Forms", tags:["Google Form","Garena","Official","Clan"], icon:GFORM, bg:"#7248b9", flags:[SG_FLAG, MY_FLAG, PH_FLAG]}
+  ,{name:"Garena Delta Force SGMYPH", handle:"@garenadeltaforce", verified:true, url:"https://www.tiktok.com/@garenadeltaforce", description:"Official TikTok of Garena Delta Force for Singapore, Malaysia and the Philippines.", category:"Community", tags:["TikTok","Garena","Official","Delta Force"], icon:TIKTOK, flag:GARENA_LOGO}
+  ,{name:"Garena Delta Force Vietnam", handle:"@garenadeltaforcevn", verified:true, url:"https://www.tiktok.com/@garenadeltaforcevn", description:"Official TikTok of Garena Delta Force Vietnam.", category:"Community", tags:["TikTok","Garena","Official","Vietnam"], icon:TIKTOK, flag:VN_FLAG}
+  ,{name:"Garena Delta Force Indonesia", handle:"@garenadfid", verified:true, url:"https://www.tiktok.com/@garenadfid", description:"Official TikTok of Garena Delta Force Indonesia.", category:"Community", tags:["TikTok","Garena","Official","Indonesia"], icon:TIKTOK, flag:ID_FLAG}
+  ,{name:"Garena Delta Force Thailand", handle:"@garenadeltaforceth", verified:true, url:"https://www.tiktok.com/@garenadeltaforceth", description:"Official TikTok of Garena Delta Force Thailand.", category:"Community", tags:["TikTok","Garena","Official","Thailand"], icon:TIKTOK, flag:TH_FLAG}
+  ,{name:"Garena Delta Force Taiwan", handle:"@garenadeltaforcetw", verified:true, url:"https://www.tiktok.com/@garenadeltaforcetw", description:"Official TikTok of Garena Delta Force Taiwan.", category:"Community", tags:["TikTok","Garena","Official","Taiwan"], icon:TIKTOK, flag:TW_FLAG}
+  ,{name:"Delta Force (Game)", handle:"@deltaforcegame", verified:true, url:"https://www.tiktok.com/@deltaforcegame", description:"TikTok page for the Delta Force game.", category:"Community", tags:["TikTok","Delta Force","Game"], icon:TIKTOK}
+  ,{name:"Garena Delta Force Facebook Page", handle:"Facebook Page", verified:true, url:"https://www.facebook.com/share/1FL86FtCMb/", description:"Official Facebook page of Garena Delta Force.", category:"Community", tags:["Facebook","Garena","Official","Delta Force"], icon:FACEBOOK, bg:"#1877f2", flag:GARENA_LOGO}
+  ,{name:"Garena Delta Force Vietnam Facebook", handle:"Facebook Page", verified:true, url:"https://www.facebook.com/share/1Dwb8ZRAtp/", description:"Official Facebook page of Garena Delta Force Vietnam.", category:"Community", tags:["Facebook","Garena","Official","Vietnam"], icon:FACEBOOK, bg:"#1877f2", flag:VN_FLAG}
+  ,{name:"Garena Delta Force Indonesia Facebook", handle:"Facebook Page", verified:true, url:"https://www.facebook.com/share/1Dy4rkewTu/", description:"Official Facebook page of Garena Delta Force Indonesia.", category:"Community", tags:["Facebook","Garena","Official","Indonesia"], icon:FACEBOOK, bg:"#1877f2", flag:ID_FLAG}
+  ,{name:"Garena Delta Force Thailand Facebook", handle:"Facebook Page", verified:true, url:"https://www.facebook.com/share/1F8H7VGbw8/", description:"Official Facebook page of Garena Delta Force Thailand.", category:"Community", tags:["Facebook","Garena","Official","Thailand"], icon:FACEBOOK, bg:"#1877f2", flag:TH_FLAG}
+  ,{name:"Delta Force (Game) Facebook Page", handle:"Facebook Page", verified:true, url:"https://www.facebook.com/share/1EjVuun1pi/", description:"Facebook page for the Delta Force game.", category:"Community", tags:["Facebook","Delta Force","Game","Official"], icon:FACEBOOK, bg:"#1877f2"}
+  ,{name:"Garena Delta Force SGMYPH YouTube", handle:"@garenadfsmp", verified:true, url:"https://www.youtube.com/@garenadfsmp", description:"Official YouTube channel of Garena Delta Force for Singapore, Malaysia and the Philippines.", category:"Community", tags:["YouTube","Garena","Official","SGMYPH"], icon:YOUTUBE, flag:GARENA_LOGO}
+  ,{name:"Garena Delta Force Vietnam YouTube", handle:"@garenadeltaforcevn", verified:true, url:"https://www.youtube.com/@garenadeltaforcevn", description:"Official YouTube channel of Garena Delta Force Vietnam.", category:"Community", tags:["YouTube","Garena","Official","Vietnam"], icon:YOUTUBE, flag:VN_FLAG}
+  ,{name:"Garena Delta Force Indonesia YouTube", handle:"@garenadfid", verified:true, url:"https://www.youtube.com/@garenadfid", description:"Official YouTube channel of Garena Delta Force Indonesia.", category:"Community", tags:["YouTube","Garena","Official","Indonesia"], icon:YOUTUBE, flag:ID_FLAG}
+  ,{name:"Garena Delta Force Thailand YouTube", handle:"@garenadeltaforceth", verified:true, url:"https://www.youtube.com/@garenadeltaforceth", description:"Official YouTube channel of Garena Delta Force Thailand.", category:"Community", tags:["YouTube","Garena","Official","Thailand"], icon:YOUTUBE, flag:TH_FLAG}
+  ,{name:"Delta Force (Game) YouTube Channel", handle:"@deltaforcegame", verified:true, url:"https://www.youtube.com/@deltaforcegame", description:"Official YouTube channel of the Delta Force game.", category:"Community", tags:["YouTube","Delta Force","Game","Official"], icon:YOUTUBE}
+  ,{name:"Garena Delta Force Instagram", handle:"@garena.deltaforce", verified:true, url:"https://www.instagram.com/garena.deltaforce/", description:"Official Instagram account of Garena Delta Force.", category:"Community", tags:["Instagram","Garena","Official","Delta Force"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)", flag:GARENA_LOGO}
+  ,{name:"Garena Delta Force Vietnam Instagram", handle:"@garenadeltaforcevn", verified:true, url:"https://www.instagram.com/garenadeltaforcevn/", description:"Official Instagram account of Garena Delta Force Vietnam.", category:"Community", tags:["Instagram","Garena","Official","Vietnam"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)", flag:VN_FLAG}
+  ,{name:"Garena Delta Force Indonesia Instagram", handle:"@garenadfid", verified:true, url:"https://www.instagram.com/garenadfid/", description:"Official Instagram account of Garena Delta Force Indonesia.", category:"Community", tags:["Instagram","Garena","Official","Indonesia"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)", flag:ID_FLAG}
+  ,{name:"Garena Delta Force Thailand Instagram", handle:"@garenadfth", verified:true, url:"https://www.instagram.com/garenadfth/", description:"Official Instagram account of Garena Delta Force Thailand.", category:"Community", tags:["Instagram","Garena","Official","Thailand"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)", flag:TH_FLAG}
+  ,{name:"Garena Delta Force Taiwan Instagram", handle:"@garenadeltaforcetw", verified:true, url:"https://www.instagram.com/garenadeltaforcetw/", description:"Official Instagram account of Garena Delta Force Taiwan.", category:"Community", tags:["Instagram","Garena","Official","Taiwan"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)", flag:TW_FLAG}
+  ,{name:"Delta Force (Game) Instagram", handle:"@deltaforcegameglobal", verified:true, url:"https://www.instagram.com/deltaforcegameglobal/", description:"Official Instagram account of the Delta Force game.", category:"Community", tags:["Instagram","Delta Force","Game","Official"], icon:INSTAGRAM, bg:"linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)"}
+  ,{name:"Delta Force Community PH Discord", handle:"Discord Server", url:"https://discord.gg/xPyfrgHSbg", description:"Discord server of the Delta Force Community Philippines.", category:"Community", tags:["Discord","Delta Force","Philippines"], icon:DISCORD, bg:"#5865f2", flag:PH_FLAG}
+  ,{name:"Garena Delta Force SMP Discord", handle:"Discord Server", url:"https://discord.gg/garena-delta-force-smp-1388534245852712970", invite:"MDE9AFpwka", description:"Discord server for Garena Delta Force SMP.", category:"Community", tags:["Discord","Garena","Delta Force"], icon:DISCORD, bg:"#5865f2", flag:GARENA_LOGO}
+  ,{name:"Garena Delta Force Discord", handle:"Discord Server", verified:true, url:"https://discord.gg/garenadeltaforce", description:"Official Discord server of Garena Delta Force.", category:"Community", tags:["Discord","Garena","Official","Delta Force"], icon:DISCORD, bg:"#5865f2", flag:GARENA_LOGO}
+  ,{name:"Delta Force (Game) Discord", handle:"Discord Server", verified:true, url:"https://discord.gg/deltaforcegame", description:"Official Discord server of the Delta Force game.", category:"Community", tags:["Discord","Delta Force","Game","Official"], icon:DISCORD, bg:"#5865f2"}
+  ,{name:"Garena Delta Force Official Site", url:"https://deltaforce.garena.com/en/?redirect=0", description:"Official website of Garena Delta Force.", category:"Official Sites", tags:["Website","Garena","Official"], icon:DF_LOGO, bg:"#0d1b1f", flag:GARENA_LOGO}
+  ,{name:"Delta Force (Game) Official Site", url:"https://www.playdeltaforce.com/en/universe/", description:"Official website of the Delta Force game.", category:"Official Sites", tags:["Website","Delta Force","Official"], icon:DF_LOGO, bg:"#0d1b1f"}
+  ,{name:"Delta Force Liquipedia", url:"https://liquipedia.net/deltaforce/Main_Page", description:"Esports wiki for Delta Force: tournaments, teams and results.", category:"Official Sites", tags:["Wiki","Esports","Delta Force"], icon:LIQUIPEDIA, bg:"#f4f6f9"}
+  ,{name:"Garena - Android", handle:"Google Play", url:"https://play.google.com/store/apps/details?id=com.garena.game.df", play:"com.garena.game.df", description:"Garena Delta Force for Android (SG, MY, PH and other Garena regions), on Google Play. Availability follows your Google account's country.", category:"Download the Game!", tags:["Android","Google Play","Garena","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:GARENA_LOGO}
+  ,{name:"Garena - iOS", handle:"App Store", url:"https://apps.apple.com/ph/app/garena-delta-force/id6670604287", apple:{id:"6670604287", slug:"garena-delta-force", fallback:["sg","my","ph","id","th","vn","tw"], site:"https://deltaforce.garena.com/en/?redirect=0"}, description:"Garena Delta Force for iPhone and iPad. Opens the App Store for your country when the app is listed there.", category:"Download the Game!", tags:["iOS","iPhone","App Store","Garena","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:GARENA_LOGO}
+  ,{name:"Global - Android", handle:"Google Play", url:"https://play.google.com/store/apps/details?id=com.proxima.dfm", play:"com.proxima.dfm", description:"Global Delta Force (Level Infinite) for Android, on Google Play. Availability follows your Google account's country.", category:"Download the Game!", tags:["Android","Google Play","Global","Level Infinite","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:GLOBE}
+  ,{name:"Global - iOS", handle:"App Store", url:"https://apps.apple.com/us/app/delta-force/id6451399876", apple:{id:"6451399876", slug:"delta-force", fallback:["us","sg","gb","au"], site:"https://www.playdeltaforce.com/en/universe/"}, description:"Global Delta Force (Level Infinite) for iPhone and iPad. Opens the App Store for your country when the app is listed there.", category:"Download the Game!", tags:["iOS","iPhone","App Store","Global","Level Infinite","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:GLOBE}
+  ,{name:"Tencent China - Android", handle:"TapTap China", url:"https://www.taptap.cn/app/330259", description:"三角洲行动, the China version of Delta Force for Android, on the official TapTap China listing.", category:"Download the Game!", tags:["Android","TapTap","Tencent","China","Download","Delta Force","三角洲行动"], icon:DF_LOGO, bg:"#0d1b1f", flag:CN_FLAG}
+  ,{name:"Tencent China - iOS", handle:"China App Store", url:"https://apps.apple.com/cn/app/id1642894547", description:"三角洲行动, the China version of Delta Force for iPhone and iPad. Needs a China-region Apple ID.", category:"Download the Game!", tags:["iOS","iPhone","Tencent","China","App Store","Download","Delta Force","三角洲行动"], icon:DF_LOGO, bg:"#0d1b1f", flag:CN_FLAG}
+  ,{name:"PC - Steam", handle:"Steam", url:"https://store.steampowered.com/app/2507950/Delta_Force/", pc:"steam", description:"Global Delta Force for Windows PC, free on Steam. Garena regions use the Garena PC client instead.", category:"Download the Game!", tags:["PC","Windows","Steam","Global","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:STEAM_BADGE}
+  ,{name:"PC - Garena", handle:"Garena PC", url:"https://deltaforce.garena.com/", pc:"garena", description:"Garena Delta Force for Windows PC, for Garena regions (Southeast Asia, Taiwan, Latin America, Middle East and North Africa).", category:"Download the Game!", tags:["PC","Windows","Garena","Download","Delta Force"], icon:DF_LOGO, bg:"#0d1b1f", flag:GARENA_LOGO}
+];
+/* ======================================================== */
+
+const $ = id => document.getElementById(id);
+const host = u => new URL(u).hostname.replace(/^www\./,"");
+/* Discord links go under Discord; other verified pages go under Official Pages */
+SITES.forEach(s => { if (/discord\.gg|discord\.com/.test(s.url)) s.category = "Discord"; else if (s.verified) s.category = "Official Pages"; });
+const ORDER = ["Official Pages", "Official Sites", "Download the Game!", "Community", "Discord", "Forms"];
+const cats = [...new Set([...ORDER, ...SITES.map(s => s.category)])].filter(Boolean);
+let cat = "Official Pages";
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+const norm = v => v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const words = v => norm(v).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+const tokens = words;
+const hay = s => norm([s.name, s.description, s.category, host(s.url), s.handle || "", s.verified ? "verified" : "", ...(s.tags || [])].join(" "));
+const HAYS = SITES.map(hay);
+const HAYC = HAYS.map(h => h.replace(/[^\p{L}\p{N}]+/gu, ""));
+/* a word matches a site if it appears in its text (or, for longer words, run together with no spaces) */
+const hit = (i, t) => HAYS[i].includes(t) || (t.length >= 5 && HAYC[i].includes(t));
+const found = t => HAYS.some((_, i) => hit(i, t));
+const matching = toks => SITES.map((_, i) => i).filter(i => toks.every(t => hit(i, t)));
+
+/* words the search knows, with how many sites use each */
+const FREQ = new Map();
+HAYS.forEach(h => new Set(h.split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 1)).forEach(w => FREQ.set(w, (FREQ.get(w) || 0) + 1)));
+const STOP = new Set(["for","the","and","with","from","that","this","are","you","your","site"]);
+const ENTRIES = [...FREQ.keys()].filter(w => w.length > 2 && !STOP.has(w)).map(w => ({key: w, show: w}));
+const PAIRS = new Map(); /* two-word names run together, e.g. "deltaforce" -> "delta force" */
+SITES.forEach(s => { const w = words(s.name); for (let i = 0; i < w.length - 1; i++) PAIRS.set(w[i] + w[i + 1], w[i] + " " + w[i + 1]); });
+PAIRS.forEach((show, key) => ENTRIES.push({key, show}));
+
+function dist(a, b){ /* edit distance; a swapped pair of letters counts as one typo */
+  const d = Array.from({length: a.length + 1}, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
+  }
+  return d[a.length][b.length];
+}
+function sound(w){ /* rough "sounds like" form: ph=f, c/k/q alike, doubled letters merged, vowels merged */
+  return w.replace(/ph/g, "f").replace(/c(?=[eiy])/g, "s").replace(/[ckq]/g, "k").replace(/z/g, "s").replace(/x/g, "ks")
+    .replace(/(.)\1+/g, "$1").replace(/(.)h/g, "$1").replace(/[aeiouy]+/g, "a");
+}
+function options(t){ /* closest known words for one mistyped word (null if it is fine as typed) */
+  if (t.length < 3 || found(t)) return null;
+  const lim = t.length <= 3 ? 1 : t.length <= 6 ? 2 : 3, ts = sound(t), best = new Map();
+  for (const e of ENTRIES) {
+    const d = dist(t, e.key), sd = t.length >= 4 ? dist(ts, sound(e.key)) : 9;
+    if (!((d <= lim && (d <= 1 || t[0] === e.key[0])) || sd <= 1)) continue;
+    const score = Math.min(d, sd + .5) - Math.min(.4, (FREQ.get(e.key) || 1) / 50);
+    if (!best.has(e.show) || best.get(e.show) > score) best.set(e.show, score);
+  }
+  const all = [...best].sort((a, b) => a[1] - b[1]);
+  return all.filter(x => x[1] < all[0][1] + .9).slice(0, 3).map(([show, score]) => ({show, score}));
+}
+function suggest(toks){ /* up to 3 corrected searches that really have results */
+  if (!toks.length || toks.length > 5) return [];
+  const variants = [{t: toks, bonus: 0}];
+  for (let i = 0; i < toks.length - 1; i++) variants.push({t: [...toks.slice(0, i), toks[i] + toks[i + 1], ...toks.slice(i + 2)], bonus: .3}); /* "del ta" -> "delta" */
+  const res = new Map(), orig = toks.join(" ");
+  for (const v of variants) {
+    const lists = v.t.map(t => options(t) || [{show: t, score: 0}]);
+    let combos = [{s: [], score: v.bonus}];
+    for (const l of lists) combos = combos.flatMap(c => l.map(o => ({s: [...c.s, o.show], score: c.score + o.score}))).slice(0, 60);
+    for (const c of combos) {
+      const text = c.s.join(" ");
+      const key = text.replace(/ /g, ""), adj = c.score - .05 * (c.s.join(" ").split(" ").length);
+      if (key === orig.replace(/ /g, "") || (res.has(key) && res.get(key)[1] <= adj)) continue;
+      if (matching(words(text)).length) res.set(key, [text, adj]);
+    }
+  }
+  return [...res.values()].sort((a, b) => a[1] - b[1]).slice(0, 3).map(x => x[0]);
+}
+/* ===== Live link checker (Discord channels + Forms) =====
+   Discord invites  -> Discord's public invite API:  Active / Deleted (expired, revoked, server gone) / Link Invalid
+   discord.com/servers/<id> pages -> Discord's public server-widget API (checks the server still exists)
+   Forms            -> reads the form page through a CORS proxy: Online / Closed (no longer accepting responses)
+                       / Broken (404, bad link) / Unavailable (timeout, server or network error)
+   Anything that can't be reached shows Down/Unavailable and is retried automatically with backoff. */
+const isDiscord = u => /^https?:\/\/(?:[\w-]+\.)?(?:discord\.gg|discord(?:app)?\.com)(?:[\/?#]|$)/i.test(u);
+const inviteCode = u => { const m = /^https?:\/\/(?:[\w-]+\.)?(?:discord\.gg|discord(?:app)?\.com\/invite)\/([^\/?#\s]+)/i.exec(u); return m && /^[A-Za-z0-9-]{2,64}$/.test(m[1]) ? m[1] : null; };
+const guildId = u => { const m = /^https?:\/\/(?:[\w-]+\.)?discord\.com\/servers\/(?:[^\/?#]*-)?(\d{15,22})(?:[\/?#]|$)/i.exec(u); return m ? m[1] : null; };
+const kindOf = s => isDiscord(s.url) ? (s.invite || inviteCode(s.url) ? "invite" : guildId(s.url) ? "guild" : "badinvite") : s.category === "Forms" ? "form" : null;
+/* CORS proxy used to read a form's page (browsers can't read forms.gle / docs.google.com directly). Change it here if it ever goes away. */
+/* How often links are re-checked while the page is open (paused when the tab is hidden). */
+const DISCORD_EVERY = 10000;                 /* Discord: every 10 seconds */
+/* Exact checking (needed for real Open/Closed on forms): deploy form-status.gs as a Google Apps Script web app and paste its /exec URL here.
+   Google then reads each form (and the SMP Discord page) from its own servers, so results are exact and need no third-party proxy. */
+const FORM_API = "https://script.google.com/macros/s/AKfycbxje6ERZtgZG7HYTBQ0RFb_HVflCEXZ9wXZ3OflMTdjXyqNFH2-w-f9TGOumhQkHdWo/exec";
+const FORM_EVERY = FORM_API ? 20000 : 60000; /* Forms: every 20 s with the Apps Script, otherwise every 60 s */
+/* Fallback when FORM_API is empty: public CORS proxies are tried in order until one returns the real form page. */
+const FORM_SOURCES = [
+  async u => { const r = await fetchT("https://api.allorigins.win/get?disableCache=true&url=" + encodeURIComponent(u) + "&_=" + Date.now(), {}, 12000); if (!r.ok) throw 0; const j = await r.json(); return {code: Number(j.status && j.status.http_code) || 0, html: String(j.contents || ""), trusted: true}; },
+  async u => { const r = await fetchT("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u), {}, 12000); return {code: r.status, html: await r.text()}; },
+  async u => { const r = await fetchT("https://corsproxy.io/?url=" + encodeURIComponent(u), {}, 12000); return {code: r.status, html: await r.text()}; }
+];
+const LIVE = new Map();
+const LABEL = {checking: "Checking", active: "Active", down: "Down", deleted: "Deleted", invalid: "Link Invalid", blocked: "Can’t check here",
+  online: "Open", closed: "Closed", broken: "Error", unavailable: "Unavailable", unverified: "Unverified", login: "Sign-in form"};
+let cspBlocked = false;
+document.addEventListener("securitypolicyviolation", e => { if (/connect-src/.test(e.violatedDirective)) cspBlocked = true; });
+const compact = n => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(1) + "k" : String(n);
+const ago = t => { const sec = Math.max(0, Math.round((Date.now() - t) / 1000)); return sec < 5 ? "just now" : sec < 60 ? sec + " sec ago" : Math.round(sec / 60) + " min ago"; };
+function tip(st){
+  const when = st.at ? " Checked " + ago(st.at) + "." : "", re = " Tap to recheck.", off = navigator.onLine ? "" : " You’re offline.";
+  return ({
+    checking: "Checking this link…",
+    active: (st.note || "Invite works.") + (st.members ? " " + st.members.toLocaleString() + " members." : "") + when + " Refreshes every " + DISCORD_EVERY / 1000 + " seconds." + re,
+    down: (navigator.onLine ? "Discord or the link isn’t responding." : "You’re offline.") + " Retrying automatically." + when + re,
+    deleted: "Invite expired, was revoked, or the server was deleted." + when + re,
+    invalid: "This isn’t a valid Discord invite link.",
+    blocked: "This page isn’t allowed to contact the checker here. Status checks work on your live site.",
+    online: (st.note || "The form is open and accepting responses.") + when + re,
+    login: (st.note || "This form needs a Google sign-in, so whether it’s open or closed can’t be checked from here. The link itself is fine to open.") + when + re,
+    unverified: (st.note || "The link responds, but the form page couldn’t be read to confirm it’s open.") + when + re,
+    closed: (st.note || "The form is closed: it’s no longer accepting responses. Re-checked automatically, so it flips back to Open when you reopen it.") + when + re,
+    broken: (st.note || "Error: the link is broken or expired (the form was deleted or the address is wrong).") + off + when + re,
+    unavailable: (st.note || "The form couldn’t be reached right now.") + off + " Retrying automatically." + when + re
+  })[st.state];
+}
+function statusHTML(i){
+  const st = LIVE.get(i) || {state: "checking"};
+  return `<span class="status s-${st.state}" data-k="${i}" role="button" tabindex="0" aria-label="${esc(LABEL[st.state] + ". " + tip(st))}" title="${esc(tip(st))}"><i class="lamp"></i>${LABEL[st.state]}${st.state === "active" && st.online ? `<small class="cnt"><b class="num" data-v="${st.online}">${st.online.toLocaleString()}</b> online</small>` : ""}</span>`;
+}
+const rolling = new WeakMap();
+function rollTo(num, to){ /* count the shown number up/down to the new value, flashing green (more) or amber (fewer) */
+  const from = Number(num.dataset.v) || 0; num.dataset.v = to; if (from === to) return;
+  cancelAnimationFrame(rolling.get(num));
+  const cnt = num.closest(".cnt");
+  if (cnt) { cnt.classList.remove("up", "down"); void cnt.offsetWidth; cnt.classList.add(to > from ? "up" : "down"); setTimeout(() => cnt.classList.remove("up", "down"), 1500); }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { num.textContent = to.toLocaleString(); return; }
+  const t0 = performance.now(), dur = Math.min(1800, 600 + Math.abs(to - from) * 15);
+  const step = now => { const k = Math.min(1, (now - t0) / dur); num.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))).toLocaleString(); if (k < 1) rolling.set(num, requestAnimationFrame(step)); };
+  rolling.set(num, requestAnimationFrame(step));
+}
+function setLive(i, patch){
+  const st = Object.assign(LIVE.get(i) || {}, patch); LIVE.set(i, st);
+  const wantsCount = st.state === "active" && st.online > 0;
+  document.querySelectorAll(`.status[data-k="${i}"]`).forEach(el => {
+    const num = el.querySelector(".num");
+    if (!el.classList.contains("s-" + st.state) || !!num !== wantsCount){ el.outerHTML = statusHTML(i); return; } /* state changed: redraw */
+    const t = tip(st); el.title = t; el.setAttribute("aria-label", LABEL[st.state] + ". " + t); /* same state: update in place */
+    const lamp = el.querySelector(".lamp"); if (lamp && st.state !== "checking") { lamp.classList.remove("blip"); void lamp.offsetWidth; lamp.classList.add("blip"); }
+    if (num) rollTo(num, st.online);
+  });
+}
+function later(i, ms){ /* adaptive schedule: next check time depends on the result */
+  const st = LIVE.get(i); clearTimeout(st.timer); st.due = Date.now() + ms;
+  st.timer = setTimeout(() => { if (!document.hidden) check(i); }, ms); /* hidden tabs wait; resumed on visibilitychange */
+}
+const fetchT = (url, opt = {}, ms = 8000) => { const c = new AbortController(), t = setTimeout(() => c.abort(), ms); return fetch(url, Object.assign({signal: c.signal, cache: "no-store"}, opt)).finally(() => clearTimeout(t)); };
+async function rateWait(r){ const j = await r.json().catch(() => ({})); return Math.max(10, Number(r.headers.get("retry-after")) || j.retry_after || 60) * 1000 + 1000; }
+
+async function probeInvite(code){
+  const r = await fetchT(`https://discord.com/api/v10/invites/${code}?with_counts=true&with_expiration=true&_=${Date.now()}`);
+  if (r.ok) {
+    const j = await r.json();
+    if (j.expires_at && Date.parse(j.expires_at) < Date.now()) return {state: "deleted", wait: 60000};
+    return {state: "active", online: j.approximate_presence_count || 0, members: j.approximate_member_count || 0};
+  }
+  if (r.status === 404) return {state: "deleted", wait: 60000};
+  if (r.status === 400) return {state: "invalid", wait: 0};
+  if (r.status === 429) return {rate: await rateWait(r)};
+  return {state: "down", fail: true};
+}
+async function probeGuild(id, pageUrl){ /* discord.com/servers/<id> pages: ask the public widget API whether that server still exists */
+  const r = await fetchT(`https://discord.com/api/guilds/${id}/widget.json?_=${Date.now()}`);
+  if (r.ok) { const j = await r.json().catch(() => ({})); return {state: "active", online: j.presence_count || 0, note: "Server exists."}; }
+  if (r.status === 403) { /* server exists, widget is off: the member/online counts only live on its public page, which the Apps Script can read */
+    if (FORM_API) {
+      try {
+        const a = await fetchT(FORM_API + (FORM_API.includes("?") ? "&" : "?") + "url=" + encodeURIComponent(pageUrl) + "&t=" + Date.now(), {}, 15000);
+        const j = a.ok ? await a.json() : null;
+        if (j && j.online) return {state: "active", online: j.online, members: j.members || 0, note: "Server exists."};
+      } catch (e) {}
+    }
+    return {state: "active", note: "Server exists (its widget is off, so there’s no live count" + (FORM_API ? "" : "; set up form-status.gs to get one") + ")."};
+  }
+  if (r.status === 404) return {state: "deleted", wait: 60000};
+  if (r.status === 429) return {rate: await rateWait(r)};
+  return {state: "down", fail: true};
+}
+const CLOSED_RX = /no longer accepting responses|isn['’]t accepting responses|not accepting responses|closed this form|form (?:has been|is) closed/i;
+const BROKEN_RX = /file you have requested does not exist|requested URL was not found|page not found|404\. That['’]s an error/i;
+const OPEN_RX = /FB_PUBLIC_LOAD_DATA_|freebirdFormviewer/i; /* markers that only a real, open form page contains */
+const SIGNIN_RX = /accounts\.google\.com\/(?:v3\/)?(?:signin|ServiceLogin)/i;
+const brokenForm = {state: "broken", note: "Error: Google says this form doesn’t exist (deleted, expired or wrong address)."};
+const unreadable = {state: "unverified", note: "The link responds, but the form page can’t be read from a browser. Set up form-status.gs (free, 2 minutes) to see Open/Closed live."};
+/* Turn a fetched page into a verdict, or null when the page isn't a recognisable form page (so the next source is tried) */
+function judgeForm(code, html, trusted){
+  if (BROKEN_RX.test(html) || (trusted && (code === 404 || code === 410))) return brokenForm;
+  if (CLOSED_RX.test(html)) return {state: "closed"};                         /* closed is checked before open */
+  if (OPEN_RX.test(html)) return {state: "online", note: "Confirmed open: the live form page was read just now."};
+  if (SIGNIN_RX.test(html)) return {state: "login"};
+  return null;
+}
+async function probeFormRaw(url){
+  if (FORM_API) { /* 1) exact: your Apps Script reads the form from Google's own servers */
+    try {
+      const r = await fetchT(FORM_API + (FORM_API.includes("?") ? "&" : "?") + "url=" + encodeURIComponent(url) + "&t=" + Date.now(), {}, 15000);
+      const j = r.ok ? await r.json() : null;
+      if (j && j.unsupported) return unreadable; /* the checker only covers your own form: skip the slow public proxies for the others */
+      if (j && !j.error) {
+        if (j.broken || j.code === 404 || j.code === 410) return brokenForm;
+        if (j.closed) return {state: "closed"};
+        if (j.open) return {state: "online", note: "Confirmed open by the status checker just now."};
+        if (j.signin) return {state: "login"};
+      }
+    } catch (e) { if (cspBlocked) return {state: "blocked", wait: 0}; }
+  }
+  for (const src of FORM_SOURCES) { /* 2) fallback: public proxies, first one that returns a real form page wins */
+    try { const {code, html, trusted} = await src(url); const v = judgeForm(code, html, trusted); if (v) return v; }
+    catch (e) { if (cspBlocked) return {state: "blocked", wait: 0}; }
+  }
+  /* 3) nothing could read the page: only reachability is known, so never claim "Online" */
+  try { await fetchT(url, {mode: "no-cors"}, 8000); return unreadable; }
+  catch (e) { return {state: "broken", fail: true, note: "Error: the link didn’t respond (broken, expired or offline)."}; }
+}
+/* A form that needs a Google login and isn't yours can't be read by any checker. If its entry has manual:"open" or manual:"closed",
+   that is shown (green Open / red Closed) whenever the automatic check can't read the form. Everything readable stays automatic. */
+async function probeForm(url, manual){
+  const r = await probeFormRaw(url);
+  if (manual && (r.state === "login" || r.state === "unverified")) {
+    const why = " (set by the page admin: this form needs a Google login, so it can’t be read automatically)";
+    return manual === "open" ? {state: "online", note: "Open" + why + "."} : {state: "closed", note: "Closed" + why + "."};
+  }
+  return r;
+}
+async function check(i, manual){
+  const s = SITES[i], kind = kindOf(s); if (!kind) return;
+  if (kind === "badinvite") { setLive(i, {state: "invalid", at: Date.now()}); return; }
+  const st = LIVE.get(i) || {}; LIVE.set(i, st);
+  if (st.busy) return; st.busy = true; clearTimeout(st.timer);
+  const t0 = Date.now(); /* start of this check: the next one is paced from here, so slow replies don't stretch the cycle */
+  if (manual || !st.state || st.state === "checking") setLive(i, {state: "checking"});
+  let wait = kind === "form" ? FORM_EVERY : DISCORD_EVERY; /* Discord every 10 s, forms every 30-60 s */
+  try {
+    const r = await (kind === "form" ? probeForm(s.url, s.manual) : kind === "guild" ? probeGuild(guildId(s.url), s.url) : probeInvite(s.invite || inviteCode(s.url)));
+    if (r.rate) { wait = r.rate; if (!st.state || st.state === "checking") setLive(i, {state: "checking"}); } /* rate limited: keep last state */
+    else {
+      st.fails = r.fail ? (st.fails || 0) + 1 : 0;
+      setLive(i, {state: r.state, at: Date.now(), online: r.online || 0, members: r.members || 0, note: r.note || ""});
+      wait = r.fail ? Math.min(15000 * 2 ** (st.fails - 1), 300000) : r.wait !== undefined ? r.wait : wait;
+    }
+  } catch (e) {
+    await new Promise(r => setTimeout(r, 60)); /* let a blocked-request report arrive first */
+    if (cspBlocked) { setLive(i, {state: "blocked"}); wait = 0; }
+    else { st.fails = (st.fails || 0) + 1; setLive(i, {state: kind === "form" ? "unavailable" : "down", at: Date.now(), online: 0, members: 0, note: ""}); wait = Math.min(15000 * 2 ** (st.fails - 1), 300000); }
+  } finally { st.busy = false; }
+  const base = kind === "form" ? FORM_EVERY : DISCORD_EVERY;
+  if (wait) later(i, wait === base ? Math.max(1000, wait - (Date.now() - t0)) : wait); /* normal cycle = exactly 10 s (forms 20/60 s); backoff and rate-limit waits stay as they are */
+}
+function startChecks(){
+  let n = 0;
+  SITES.forEach((s, i) => { const k = kindOf(s); if (!k) return; if (k === "badinvite") setLive(i, {state: "invalid"}); else setTimeout(() => check(i), 250 * n++); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) LIVE.forEach((st, i) => { if (st.due && st.due <= Date.now()) check(i); }); });
+  window.addEventListener("online", () => LIVE.forEach((st, i) => { if (st.state === "down" || st.state === "unavailable") check(i, true); }));
+}
+/* ===== Country-aware store links =====
+   Apple: works out your App Store country (time zone first, then browser language), asks Apple's public
+   lookup API whether the app is listed there, and otherwise tries the entry's fallback countries, then the
+   official site. Google Play: adds your country to the link; Play itself decides availability per account.
+   If the lookup can't run (offline / blocked), the entry keeps its default link. */
+const TZ = {"Asia/Manila":"ph","Asia/Kuala_Lumpur":"my","Asia/Kuching":"my","Asia/Jakarta":"id","Asia/Makassar":"id","Asia/Jayapura":"id","Asia/Singapore":"sg","Asia/Bangkok":"th","Asia/Ho_Chi_Minh":"vn","Asia/Saigon":"vn","Asia/Taipei":"tw","Asia/Hong_Kong":"hk","Asia/Shanghai":"cn","Asia/Tokyo":"jp","Asia/Seoul":"kr","Asia/Kolkata":"in","Asia/Calcutta":"in","Asia/Dubai":"ae","Asia/Riyadh":"sa","Asia/Karachi":"pk","Asia/Dhaka":"bd","Europe/London":"gb","Europe/Paris":"fr","Europe/Berlin":"de","Europe/Madrid":"es","Europe/Rome":"it","Europe/Istanbul":"tr","Europe/Moscow":"ru","America/New_York":"us","America/Chicago":"us","America/Denver":"us","America/Los_Angeles":"us","America/Toronto":"ca","America/Mexico_City":"mx","America/Sao_Paulo":"br","Australia/Sydney":"au","Australia/Melbourne":"au","Pacific/Auckland":"nz"};
+const guesses = (() => {
+  const out = [];
+  try { const c = TZ[Intl.DateTimeFormat().resolvedOptions().timeZone]; if (c) out.push(c); } catch (e) {}
+  (navigator.languages || [navigator.language || ""]).forEach(l => { const m = /[-_]([A-Za-z]{2})$/.exec(l); if (m) out.push(m[1].toLowerCase()); });
+  return [...new Set(out)];
+})();
+const STORE = new Map(); /* site index -> {url, note} once resolved */
+const regionName = cc => { try { return new Intl.DisplayNames(["en"], {type: "region"}).of(cc.toUpperCase()); } catch (e) { return cc.toUpperCase(); } };
+const appleUrl = (a, cc) => `https://apps.apple.com/${cc}/app/${a.slug}/id${a.id}`;
+const appleListed = (id, cc) => fetch(`https://itunes.apple.com/lookup?id=${id}&country=${cc}`, {cache: "force-cache"})
+  .then(r => r.ok ? r.json() : null).then(j => j ? j.resultCount > 0 : null).catch(() => null);
+function urlOf(s){
+  const st = STORE.get(SITES.indexOf(s)); if (st) return st.url;
+  if (s.play) return `https://play.google.com/store/apps/details?id=${s.play}` + (guesses[0] ? `&gl=${guesses[0]}` : "");
+  return s.url;
+}
+/* Garena publishes the PC game in these regions (SE Asia, Taiwan, Central/South America, Brazil, Middle East, North Africa); elsewhere it's Steam. Approximate, from the publisher's announcement. */
+const GARENA_CC = new Set("sg my ph id th vn kh la mm bn tl tw gt hn sv ni cr pa bz co ve ec pe bo cl ar uy py gy sr br ae sa qa kw bh om jo lb iq sy ye eg ma dz tn ly".split(" "));
+function badgeOf(s){
+  const st = STORE.get(SITES.indexOf(s)), tag = t => `<span class="where">${esc(t)}</span>`;
+  if (st && st.note) return tag(st.note);
+  if (s.pc && guesses[0]) {
+    const g = GARENA_CC.has(guesses[0]);
+    if (s.pc === "steam" && g) return tag("Your region uses Garena PC");
+    if (s.pc === "garena" && !g) return tag("Garena regions only");
+  }
+  return "";
+}
+const storeRender = () => document.querySelectorAll("#list li[data-k], #pinlist li[data-k]").forEach(li => { /* update links/badges in place: no re-render, no flicker */
+  const s = SITES[+li.dataset.k], a = li.querySelector(".row"), slot = li.querySelector(".slot"); if (!s || !a) return;
+  a.href = urlOf(s);
+  if (slot) { const h = badgeOf(s), t = h.replace(/<[^>]*>/g, ""); if (slot.dataset.t !== t) { slot.dataset.t = t; slot.innerHTML = h; } }
+});
+function startStoreLinks(){
+  SITES.forEach(async (s, i) => {
+    if (!s.apple) return;
+    const a = s.apple, tried = [...new Set([...guesses, ...a.fallback])].slice(0, 6);
+    for (const cc of tried) {
+      const ok = await appleListed(a.id, cc);
+      if (ok === null) { if (guesses[0]) { STORE.set(i, {url: appleUrl(a, guesses[0])}); storeRender(); } return; } /* can't check: best guess */
+      if (ok) { STORE.set(i, {url: appleUrl(a, cc), note: (guesses.includes(cc) ? "" : "Closest: ") + regionName(cc) + " App Store"}); storeRender(); return; }
+    }
+    STORE.set(i, {url: a.site, note: "Not listed in your region · official site"}); storeRender();
+  });
+}
+const APPS = [[TIKTOK, "TikTok"], [FACEBOOK, "Facebook"], [YOUTUBE, "YouTube"], [INSTAGRAM, "Instagram"]];
+const appOf = s => { const a = APPS.find(([ico]) => ico === s.icon); return a ? a[1] : null; };
+const SUBS = ["All", ...APPS.map(a => a[1])];
+let sub = "All";
+/* second row of filters, only on the Official Pages tab: All / TikTok / Facebook / YouTube / Instagram */
+function renderSubChips(){
+  const box = $("subchips"), show = cat === "Official Pages" && tokens($("q").value).length === 0;
+  box.hidden = !show;
+  if (box.children.length !== SUBS.length) box.innerHTML = SUBS.map(a => `<button class="chip" data-s="${esc(a)}">${esc(a)}</button>`).join("");
+  [...box.children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.s === sub)));
+}
+function renderChips(){
+  const box = $("chips"), searching = tokens($("q").value).length > 0;
+  if (box.children.length !== cats.length) box.innerHTML = cats.map(c => `<button class="chip" data-c="${esc(c)}">${esc(c)}</button>`).join("");
+  [...box.children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.c === cat && !searching)));
+  renderSubChips();
+}
+
+/* ===== Pins: kept in this browser (localStorage). Sites marked pin:true in SITES are pinned until you change it. ===== */
+const PIN_KEY = "site-directory-pins";
+/* Creator mode: open the page once with  #creator  on the end of the address (e.g. index.html#creator).
+   Only then do pin buttons appear. Visitors can't pin; they just see the sites marked pin:true in SITES.
+   (Set PINNED_PUBLIC to false to hide the Pinned section from visitors entirely.) */
+const PINNED_PUBLIC = true;
+const CREATOR_KEY = "site-directory-creator";
+const IS_CREATOR = (() => {
+  try {
+    if (location.hash === "#creator") localStorage.setItem(CREATOR_KEY, "1");
+    if (location.hash === "#viewer") localStorage.removeItem(CREATOR_KEY);
+    return localStorage.getItem(CREATOR_KEY) === "1";
+  } catch (e) { return location.hash === "#creator"; }
+})();
+document.documentElement.classList.toggle("creator", IS_CREATOR);
+let PINS = (() => {
+  if (IS_CREATOR) { try { const v = localStorage.getItem(PIN_KEY); if (v !== null) { const a = JSON.parse(v); if (Array.isArray(a)) return a; } } catch (e) {} }
+  return SITES.filter(s => s.pin).map(s => s.url);
+})();
+const savePins = () => { try { localStorage.setItem(PIN_KEY, JSON.stringify(PINS)); } catch (e) {} };
+const isPinned = s => PINS.includes(s.url);
+const PIN_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`;
+const pinBtn = s => { if (!IS_CREATOR) return ""; const on = isPinned(s); return `<button type="button" class="pin" data-pin="${SITES.indexOf(s)}" aria-pressed="${on}" aria-label="${on ? "Unpin" : "Pin"} ${esc(s.name)}" title="${on ? "Unpin" : "Pin to top"}">${PIN_SVG}</button>`; };
+function togglePin(i){
+  const s = SITES[i]; if (!s) return;
+  const at = PINS.indexOf(s.url); if (at < 0) PINS.push(s.url); else PINS.splice(at, 1);
+  savePins();
+  const on = isPinned(s);
+  document.querySelectorAll(`.pin[data-pin="${i}"]`).forEach(b => { b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", (on ? "Unpin " : "Pin ") + s.name); b.title = on ? "Unpin" : "Pin to top"; });
+  renderPins();
+}
+/* the Pinned section: shows above the categories whenever something is pinned (hidden while searching) */
+function renderPins(){
+  const box = $("pinned"), list = $("pinlist");
+  const items = PINS.map(u => SITES.findIndex(s => s.url === u)).filter(i => i >= 0);
+  box.hidden = tokens($("q").value).length > 0 || !items.length || !(PINNED_PUBLIC || IS_CREATOR);
+  if (box.hidden) return;
+  const sig = items.join(",");
+  $("pincount").textContent = items.length;
+  if (list.dataset.sig === sig) return;
+  list.dataset.sig = sig;
+  list.innerHTML = items.map(i => `<li data-k="${i}">${rowHTML(SITES[i], true)}</li>`).join("");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".pin"); if (!b || !IS_CREATOR) return;
+  e.preventDefault(); e.stopPropagation(); togglePin(+b.dataset.pin);
+});
+const rowHTML = (s, searching) => `<a class="row" href="${esc(urlOf(s))}" target="_blank" rel="noopener noreferrer">
+      ${s.icon ? `<span class="ico brand" ${s.bg ? `style="background:${s.bg};border-color:${s.bg}"` : ""}>${s.icon}${s.flags ? `<span class="flags">${s.flags.map(f => `<span class="flag">${f}</span>`).join("")}</span>` : s.flag ? `<span class="flag">${s.flag}</span>` : ""}</span>` : `<span class="ico"><img src="https://www.google.com/s2/favicons?domain=${esc(host(s.url))}&sz=64" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${esc(s.name[0])}'))"></span>`}
+      <span><span class="name">${esc(s.name)}</span><span class="host">${esc(s.handle || host(s.url))}</span><span class="slot" data-t="${esc(badgeOf(s).replace(/<[^>]*>/g, ""))}">${badgeOf(s)}</span>${searching ? `<span class="where">${esc(s.category)}</span>` : ""}${s.verified ? `<span class="verified"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified</span>` : ""}
+      <p class="desc">${esc(s.description)}</p>
+      ${kindOf(s) ? `<div class="statusline">${statusHTML(SITES.indexOf(s))}</div>` : ""}
+      </span>
+    </a>${pinBtn(s)}`;
+
+/* ===== Smooth list updates =====
+   Rows are kept and re-used between searches/tabs instead of being rebuilt: rows that stay slide to
+   their new spot, new rows fade/rise in (staggered), rows that go fade out, and the list height eases. */
+const EASE = "cubic-bezier(.2,.8,.2,1)";
+const motionOK = () => !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+let drawn = false;
+function render(){
+  renderPins();
+  const raw = $("q").value.trim();
+  const toks = tokens(raw);
+  const searching = toks.length > 0;
+  /* Searching looks through every tab; with no search, only the selected tab shows */
+  const out = SITES.filter((s, i) => searching ? toks.every(t => hit(i, t)) : s.category === cat && (cat !== "Official Pages" || sub === "All" || appOf(s) === sub))
+    .sort((a,b)=>(!!b.verified - !!a.verified)); /* verified first, then the order written in SITES (grouped by app) */
+  $("count").textContent = searching ? `${out.length} ${out.length===1?"site":"sites"} found in all tabs` : `${out.length} ${out.length===1?"site":"sites"}`;
+  const hint = $("hint");
+  hint.hidden = true;
+  if (searching && !out.length) {
+    const sg = suggest(toks);
+    if (sg.length) {
+      const b = sg.map(x => `<button type="button" data-s="${esc(x)}">${esc(x)}</button>`);
+      hint.innerHTML = "You meant " + (b.length > 1 ? b.slice(0, -1).join(", ") + " or " + b[b.length - 1] : b[0]) + "?";
+      hint.hidden = false;
+    }
+  }
+
+  const list = $("list"), move = motionOK(), animate = move && drawn;
+  /* 1. measure everything before touching the DOM */
+  const h0 = list.offsetHeight, listTop = list.getBoundingClientRect().top, rects = new Map();
+  if (animate) [...list.children].forEach(li => rects.set(li, li.getBoundingClientRect().top));
+  const cur = new Map();
+  [...list.children].forEach(li => { if (!li.classList.contains("leaving")) cur.set(li.dataset.k, li); });
+
+  /* 2. rows that are no longer wanted */
+  const want = out.length ? out.map(s => ({k: String(SITES.indexOf(s)), s})) : [{k: "empty", s: null}];
+  const keep = new Set(want.map(w => w.k));
+  cur.forEach((li, k) => {
+    if (keep.has(k)) return;
+    if (!animate) { li.remove(); return; }
+    li.classList.add("leaving");
+    Object.assign(li.style, {position: "absolute", left: "0", right: "0", top: (rects.get(li) - listTop) + "px", margin: "0", pointerEvents: "none"});
+    li.animate([{opacity: 1}, {opacity: 0}], {duration: 160, easing: "ease-out", fill: "forwards"}).onfinish = () => li.remove();
+  });
+
+  /* 3. create / refresh wanted rows, in order */
+  const lis = want.map(({k, s}) => {
+    let li = cur.get(k), fresh = !li;
+    if (fresh) { li = document.createElement("li"); li.dataset.k = k; }
+    const sig = k === "empty" ? (searching ? "s:" + raw : "t:" + cat) : (searching ? "1" : "0");
+    if (li.dataset.sig !== sig) {
+      li.dataset.sig = sig;
+      if (k === "empty") { li.className = "empty"; li.textContent = searching ? `No sites match \u201c${raw}\u201d. Try different words.` : "No sites in this tab yet."; }
+      else li.innerHTML = rowHTML(s, searching);
+    }
+    li._fresh = fresh;
+    return li;
+  });
+  let prev = null;
+  lis.forEach(li => {
+    let n = prev ? prev.nextElementSibling : list.firstElementChild;
+    while (n && n.classList.contains("leaving")) n = n.nextElementSibling;
+    if (n !== li) list.insertBefore(li, n);
+    prev = li;
+  });
+
+  /* 4. animate: slide survivors, fade in newcomers, ease the height */
+  if (move) {
+    lis.forEach((li, n) => {
+      if (li._fresh) {
+        li.animate([{opacity: 0, transform: "translateY(12px)"}, {opacity: 1, transform: "none"}],
+          {duration: 340, delay: Math.min(n, 8) * 40 + (animate ? 60 : 0), easing: EASE, fill: "backwards"});
+      } else if (animate && rects.has(li)) {
+        const d = rects.get(li) - li.getBoundingClientRect().top;
+        if (Math.abs(d) > 1) li.animate([{transform: `translateY(${d}px)`}, {transform: "none"}], {duration: 320, easing: EASE});
+      }
+    });
+    if (animate) {
+      list.getAnimations().forEach(a => a.cancel());
+      const h1 = list.offsetHeight;
+      if (Math.abs(h1 - h0) > 1) {
+        list.style.overflow = "hidden";
+        const a = list.animate([{height: h0 + "px"}, {height: h1 + "px"}], {duration: 320, easing: EASE});
+        a.onfinish = a.oncancel = () => { list.style.overflow = ""; };
+      }
+    }
+  }
+  lis.forEach(li => { li._fresh = false; });
+  drawn = true;
+}
+
+$("q").addEventListener("input", render);
+$("chips").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  $("q").value = ""; cat = b.dataset.c; sub = "All"; renderChips(); render();
+});
+$("subchips").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  sub = b.dataset.s; renderSubChips(); render();
+});
+$("hint").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  $("q").value = b.dataset.s; render(); renderChips();
+});
+$("q").addEventListener("input", renderChips);
+$("q").addEventListener("keydown", e => { if (e.key === "Enter") { const b = $("hint").querySelector("button"); if (b) b.click(); } });
+[$("list"), $("pinlist")].forEach(el => { el.addEventListener("click", e => {
+  const b = e.target.closest(".status"); if (!b) return;
+  e.preventDefault(); e.stopPropagation(); check(+b.dataset.k, true);
+}); el.addEventListener("keydown", e => {
+  const b = e.target.closest && e.target.closest(".status"); if (!b || (e.key !== "Enter" && e.key !== " ")) return;
+  e.preventDefault(); e.stopPropagation(); check(+b.dataset.k, true);
+}); });
+/* ===== Gold embers & dust, layered front to back =====
+   Every particle has a depth z (0 = far, 1 = near). Far ones are tiny, sharp, dim and slow; near ones are big,
+   soft (out-of-focus), faster and drift more. Near ones (about 1 in 5) are drawn in FRONT of the page, the rest
+   behind it. Scrolling moves near particles with the page and far ones barely at all (parallax), a slow wind
+   gusts everything sideways, embers rise, flicker and cool as they climb, dust floats. */
+function startEmbers(){
+  const cBack = $("embers-back"), cFront = $("embers-front"); if (!cBack || !cFront) return;
+  const ctx = [cBack.getContext("2d"), cFront.getContext("2d")];
+  const reduce = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : {matches: false};
+  const rnd = (a, b) => a + Math.random() * (b - a), lerp = (a, b, t) => a + (b - a) * t;
+  const mk = (r, g, b, sharp) => {
+    const n = 64, c = document.createElement("canvas"); c.width = c.height = n;
+    const x = c.getContext("2d"), gr = x.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2);
+    if (sharp) { gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.35, `rgba(${r},${g},${b},.85)`); gr.addColorStop(.55, `rgba(${r},${g},${b},.22)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); }
+    else { gr.addColorStop(0, `rgba(${r},${g},${b},.95)`); gr.addColorStop(.3, `rgba(${r},${g},${b},.5)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); }
+    x.fillStyle = gr; x.fillRect(0, 0, n, n); return c;
+  };
+  const SP = {
+    gold:   [mk(255, 200, 70, true),  mk(255, 190, 60, false)],
+    orange: [mk(255, 125, 35, true),  mk(255, 120, 30, false)],
+    dust:   [mk(238, 212, 160, true), mk(230, 200, 150, false)]
+  };
+  let W = 0, H = 0, DPR = 1, parts = [], wind = 0, last = performance.now(), lastScroll = window.scrollY, px = .5, py = .5, tx = .5, ty = .5, raf = 0;
+
+  function spawn(p, anywhere) {
+    const ember = p.kind === "ember", m = p.size;
+    p.x = rnd(-m, W + m);
+    p.y = anywhere ? rnd(-m, H + m) : (ember ? H + m + rnd(0, 40) : (Math.random() < .5 ? -m : H + m));
+    return p;
+  }
+  function make() {
+    const z = Math.pow(Math.random(), 1.5), ember = Math.random() < .4;
+    const size = lerp(ember ? 2.6 : 2.0, ember ? 22 : 17, Math.pow(z, 2.2)) * rnd(.8, 1.25);
+    return {
+      kind: ember ? "ember" : "dust", z, size, front: z > .72,
+      sp: ember ? SP[Math.random() < .55 ? "gold" : "orange"] : SP.dust,
+      soft: z > .45 ? 1 : 0,
+      a: ember ? lerp(1.15, .42, z) : lerp(.55, .22, z),
+      vy: ember ? -(lerp(18, 85, z)) * rnd(.6, 1.4) : rnd(-4, 3) * (.4 + z * 2),
+      vx: rnd(-6, 6) * (.4 + z),
+      sway: rnd(6, 24) * (.4 + z), swf: rnd(.4, 1.6), ph: rnd(0, 6.28), fl: rnd(5, 11),
+      x: 0, y: 0
+    };
+  }
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 1.5); W = window.innerWidth; H = window.innerHeight;
+    [cBack, cFront].forEach((c, i) => { c.width = Math.round(W * DPR); c.height = Math.round(H * DPR); ctx[i].setTransform(DPR, 0, 0, DPR, 0, 0); ctx[i].globalCompositeOperation = "lighter"; });
+    const area = W * H, nd = Math.max(36, Math.min(120, area / 10000)), ne = Math.max(24, Math.min(80, area / 14000));
+    parts = []; for (let i = 0; i < nd; i++) { let p = make(); while (p.kind !== "dust") p = make(); parts.push(spawn(p, true)); }
+    for (let i = 0; i < ne; i++) { let p = make(); while (p.kind !== "ember") p = make(); parts.push(spawn(p, true)); }
+  }
+
+  function frame(now) {
+    const dt = Math.min(.05, Math.max(0, (now - last) / 1000)); last = now; const t = now / 1000;
+    wind = Math.sin(t * .23) * 14 + Math.sin(t * .61 + 1.3) * 7;
+    px += (tx - px) * .05; py += (ty - py) * .05;
+    const sy = window.scrollY, ds = sy - lastScroll; lastScroll = sy;
+    ctx[0].clearRect(0, 0, W, H); ctx[1].clearRect(0, 0, W, H);
+    for (const p of parts) {
+      const z = p.z, m = p.size * 1.5;
+      p.y -= ds * z * .9;                                  /* parallax: near moves with the page, far barely */
+      p.x += (p.vx + wind * (.35 + z) + Math.sin(t * p.swf + p.ph) * p.sway) * dt;
+      p.y += p.vy * dt;
+      if (p.kind === "dust") p.y += Math.cos(t * p.swf * .7 + p.ph) * 3 * dt;
+      if (p.y < -m) { p.y = H + m; if (p.kind === "ember") p.x = rnd(-m, W + m); } else if (p.y > H + m) p.y = -m;
+      if (p.x < -m) p.x = W + m; else if (p.x > W + m) p.x = -m;
+      let a = p.a;
+      if (p.kind === "ember") {
+        a *= .62 + .38 * Math.sin(t * p.fl + p.ph);       /* flicker */
+        a *= .3 + .7 * Math.max(0, Math.min(1, p.y / H + .15)); /* cools and fades as it rises */
+      } else a *= .75 + .25 * Math.sin(t * .8 + p.ph);     /* dust glints slowly */
+      if (a <= .01) continue;
+      const x = p.x + (px - .5) * z * 34, y = p.y + (py - .5) * z * 20;
+      const c = ctx[p.front ? 1 : 0], s = p.size * (p.soft ? 2.4 : 1.9);
+      c.globalAlpha = a; c.drawImage(p.sp[p.soft], x - s / 2, y - s / 2, s, s);
+    }
+    raf = reduce.matches ? 0 : requestAnimationFrame(frame);
+  }
+  const go = () => { cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(frame); };
+  window.addEventListener("resize", () => { clearTimeout(resize.t); resize.t = setTimeout(() => { resize(); if (reduce.matches) go(); }, 150); });
+  window.addEventListener("pointermove", e => { if (e.pointerType === "mouse") { tx = e.clientX / W; ty = e.clientY / H; } }, {passive: true});
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { cancelAnimationFrame(raf); raf = 0; } else if (!raf) go(); });
+  if (reduce.addEventListener) reduce.addEventListener("change", go);
+  resize(); go();
+
+}
+/* ===== Animated search placeholder: types a phrase, holds, erases, then moves on to a random related one ===== */
+function startPlaceholder(){
+  const q = $("q"); if (!q) return;
+  const base = "Search sites";
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { q.placeholder = base; return; }
+  const LOOK = ["TikTok pages", "Facebook pages", "YouTube channels", "Instagram accounts", "Discord servers", "the official site",
+    "Vietnam", "Indonesia", "Thailand", "Taiwan", "the Philippines", "Android downloads", "iOS downloads", "the Steam page",
+    "clan forms", "the esports wiki", "verified pages"];
+  const SEARCH = ["by app", "by country", "verified pages", "Discord servers", "download links", "official pages"];
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let last = base;
+  const next = () => {
+    let p; do { p = Math.random() < .6 ? "Looking for " + pick(LOOK) + "\u2026" : "Search " + pick(SEARCH); } while (p === last);
+    return (last = p);
+  };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const idle = async () => { while (q.value || document.hidden) await sleep(400); };
+  (async function loop(phrase) {
+    for (;;) {
+      await idle();
+      for (let i = 1; i <= phrase.length; i++) { if (q.value) break; q.placeholder = phrase.slice(0, i) + "|"; await sleep(55 + Math.random() * 45); }
+      for (let t = 0; t < 4 && !q.value; t++) { q.placeholder = phrase + (t % 2 ? "|" : ""); await sleep(420); }
+      for (let i = phrase.length - 1; i >= 0; i--) { if (q.value) break; q.placeholder = phrase.slice(0, i) + (i ? "|" : ""); await sleep(24); }
+      q.placeholder = base; await sleep(250);
+      phrase = next();
+    }
+  })(base);
+}
+renderChips(); render();
+startChecks();
+startStoreLinks();
+startEmbers();
+startPlaceholder();
+/* creator bar: Copy pin list / Exit */
+if (IS_CREATOR) {
+  $("cbar").hidden = false;
+  $("cpcopy").addEventListener("click", async () => {
+    const txt = PINS.map(u => SITES.find(s => s.url === u)).filter(Boolean).map(s => s.name + " - " + s.url).join("\n") || "(nothing pinned)";
+    try { await navigator.clipboard.writeText(txt); $("cpcopy").textContent = "Copied!"; }
+    catch (e) { window.prompt("Copy your pinned sites:", txt); }
+    setTimeout(() => { $("cpcopy").textContent = "Copy pin list"; }, 1600);
+  });
+  $("cexit").addEventListener("click", () => { try { localStorage.removeItem(CREATOR_KEY); } catch (e) {} location.hash = ""; location.reload(); });
+}
+</script>
+</body>
+</html>
